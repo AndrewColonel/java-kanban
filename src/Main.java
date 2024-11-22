@@ -25,9 +25,9 @@ public class Main {
                 "Это подзадача для Эпика 2 - ПРОЕКТ!!!", status);
 
 
-        Task newTask10 = new Task("Переезд", 10,
+        Task newTask10 = new Task("Переезд",
                 "Это задача -Эпик №1");
-        Task newTask11 = new Task("Проект", 11,
+        Task newTask11 = new Task("Проект",
                 "Это задача -Эпик №2");
 
         Subtask newSubTask1 = new Subtask(newTask4);
@@ -40,7 +40,6 @@ public class Main {
 
         Epic epic1 = new Epic(newTask10);
         Epic epic2 = new Epic(newTask11);
-
 
         TaskManager taskManager = new TaskManager();
 
@@ -55,9 +54,10 @@ public class Main {
         taskManager.addEpic(epic1);
         taskManager.addEpic(epic2);
 
-
-
-
+        taskManager.addSubTasks(newSubTask4);
+        taskManager.addSubTasks(newSubTask5);
+        taskManager.addSubTasks(newSubTask6);
+        taskManager.addSubTasks(newSubTask7);
 
 
         System.out.println("-".repeat(20));
@@ -66,12 +66,6 @@ public class Main {
         System.out.println(taskManager.getSubTasks());
         System.out.println("-".repeat(20));
         System.out.println(taskManager.getEpics());
-
-
-
-
-
-
 
        /* System.out.println("Поехали!");
         System.out.println(newTask1);

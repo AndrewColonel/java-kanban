@@ -8,20 +8,25 @@ public class Task {
     protected String description;
     protected TaskStatus status;
 
-    public Task(String name, int id, String description, TaskStatus status) {
+    public Task(String name, int id, String description, TaskStatus status) { //констурктор для тестирования
         this.name = name;
         this.id = id;
         this.description = description;
         this.status = status;
     }
 
-    public Task(String name, int id, String description) {
+    public Task(String name, String description, TaskStatus status) { // Основной констурктор
         this.name = name;
-        this.id = id;
+        this.description = description;
+        this.status = status;
+
+    }
+
+    public Task(String name, String description) { //конструктор для Эпика
+        this.name = name;
         this.description = description;
         status = TaskStatus.NEW;
     }
-
 
 
     @Override

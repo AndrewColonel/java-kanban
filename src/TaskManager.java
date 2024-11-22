@@ -29,12 +29,6 @@ public class TaskManager {
         subTasks.put(subtask.id, subtask);
     }
 
-    /*public void addSubTasks(Subtask subtask) {
-        subtask.setSubTeskId( nextId++);
-        subTasks.put(subtask.id, subtask);
-    }*/
-
-
     public HashMap<Integer, Subtask> getSubTasks() {
         return subTasks;
     }
