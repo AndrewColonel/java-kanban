@@ -12,20 +12,56 @@ import java.util.HashMap;
 public class TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
-    HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    int nextId = 1;
+    HashMap<Integer, Subtask> subTasks = new HashMap<>();
+    private int nextId = 1;
 
-    public void add(Task task) {
+    public void addTasks(Task task) {
         task.id = nextId++;
         tasks.put(task.id, task);
     }
 
-    // Как вставляют эпик
-    // Создали epic без подзадач
-    // .add(epic) // <- выставился ему id
-    // Создали подзадачу с subtask.epicId = epic.id
-    // .add(subtask)
-    public void add(Epic epic) {
+    public HashMap<Integer, Task> getTasks() {
+        return tasks;
+    }
+
+    public void addSubTasks(Subtask subtask) {
+        subtask.id = nextId++;
+        subTasks.put(subtask.id, subtask);
+    }
+
+    /*public void addSubTasks(Subtask subtask) {
+        subtask.setSubTeskId( nextId++);
+        subTasks.put(subtask.id, subtask);
+    }*/
+
+
+    public HashMap<Integer, Subtask> getSubTasks() {
+        return subTasks;
+    }
+
+    public void addEpic(Epic epic) {
+        epic.id = nextId++;
+        epics.put(epic.id, epic);
+    }
+
+    public HashMap<Integer, Epic> getEpics() {
+        return epics;
+    }
+
+
+
+
+
+
+
+// Как вставляют эпик
+// Создали epic без подзадач
+// .add(epic) // <- выставился ему id
+// Создали подзадачу с subtask.epicId = epic.id
+// .add(subtask)
+
+
+/*    public void add(Epic epic) {
         epic.id = nextId++;
         epics.put(epic.id, epic);
     }
@@ -54,5 +90,7 @@ public class TaskManager {
 
     public void update(Subtask subtask) {
         subtasks.put(subtask.id, subtask);
-    }
+    }*/
+
+
 }

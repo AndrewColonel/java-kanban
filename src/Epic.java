@@ -3,20 +3,65 @@
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> sutasksIds = new ArrayList<>();
+    private int epicId;
+    private String epicName;
+    private ArrayList<Integer> subtasksIds;
+    private TaskStatus epicStatus;
 
+    public Epic(Task task) {
+        super(task.name, task.id, task.description);
+        epicId = task.id;
+        epicName = task.name;
+        epicStatus = TaskStatus.NEW;
+        subtasksIds = new ArrayList<>();
+    }
 
-    public Epic(int id, String description, String status, ArrayList<Integer> sutasksIds) {
-        super(id, description, status);
-        this.sutasksIds = sutasksIds;
+    public int getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(int epicId) {
+        this.epicId = epicId;
+    }
+
+    public String getEpicName() {
+        return epicName;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
+    }
+
+    public ArrayList<Integer> getSubtasksIds() {
+        return subtasksIds;
+    }
+
+    public void setSubtasksIds(ArrayList<Integer> subtasksIds) {
+        this.subtasksIds = subtasksIds;
+    }
+
+    public TaskStatus getEpicStatus() {
+        return epicStatus;
+    }
+
+    public void setEpicStatus(TaskStatus epicStatus) {
+        this.epicStatus = epicStatus;
     }
 
 
-    public ArrayList<Integer> getSutasksIds() {
-        return sutasksIds;
-    }
-
-    public void setSutasksIds(ArrayList<Integer> sutasksIds) {
-        this.sutasksIds = sutasksIds;
-    }
+   /* @Override
+    public String toString() {
+        String result;
+        result = "Epic{" +
+                "epicName='" + epicName + '\'' +
+                ", epicId=" + epicId +
+                ", description='" + description + '\'';
+        if (!subtasksIds.isEmpty()) {
+            result = result + ", subtasksIds=" + subtasksIds;
+        } else {
+            result = result + ", subtasksIds=NULL";
+        }
+        result = result + ", epicStatus=" + epicStatus + "}";
+        return result;
+    }*/
 }
