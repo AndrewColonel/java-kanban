@@ -1,65 +1,36 @@
 public class Main {
 
     public static void main(String[] args) {
-        TaskStatus status = TaskStatus.NEW;
-
-        Task newTask1 = new Task("написать cписок  дел", 1,
-                "простая, орбычная, задача", status);
-        Task newTask2 = new Task("помыть посуду", 2,
-                "простая, орбычная, задача", status);
-        Task newTask3 = new Task("погулять с собакой", 3,
-                "простая, орбычная, задача", status);
-
-        Task newTask4 = new Task("упаковать коробки", 4,
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", status);
-        Task newTask5 = new Task("не забыть кошку", 4,
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", status);
-        Task newTask6 = new Task("заказать машину и гркзчиков", 4,
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", status);
-
-        Task newTask7 = new Task("написать и согласовать ТЗ", 7,
-                "Это подзадача для Эпика 2 - ПРОЕКТ!!!", status);
-        Task newTask8 = new Task("заключить договор", 8,
-                "Это подзадача для Эпика 2 - ПРОЕКТ!!!", status);
-        Task newTask9 = new Task("получить аванс", 9,
-                "Это подзадача для Эпика 2 - ПРОЕКТ!!!", status);
+        TaskStatus statusNew = TaskStatus.NEW;
+        TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
+        TaskStatus statusDone = TaskStatus.DONE;
 
 
-        Task newTask10 = new Task("Переезд",
-                "Это задача -Эпик №1");
-        Task newTask11 = new Task("Проект",
-                "Это задача -Эпик №2");
-
-        Subtask newSubTask1 = new Subtask(newTask4);
-        Subtask newSubTask2 = new Subtask(newTask5);
-        Subtask newSubTask3 = new Subtask(newTask6);
-        Subtask newSubTask4 = new Subtask(newTask7);
-        Subtask newSubTask5 = new Subtask(newTask8);
-        Subtask newSubTask6 = new Subtask(newTask9);
-        Subtask newSubTask7 = new Subtask(newTask4);
-
-        Epic epic1 = new Epic(newTask10);
-        Epic epic2 = new Epic(newTask11);
-
+        //создаем экземпляр менеджера
         TaskManager taskManager = new TaskManager();
 
-        taskManager.addTasks(newTask1);
-        taskManager.addTasks(newTask2);
-        taskManager.addTasks(newTask3);
 
-        taskManager.addSubTasks(newSubTask1);
-        taskManager.addSubTasks(newSubTask2);
-        taskManager.addSubTasks(newSubTask3);
+        //Создание задач, эпиков и подзадач. Объекта передается в качестве параметра
+        taskManager.addTasks(new Task("написать cписок  дел",
+                "простая, орбычная, задача", statusNew));
+        taskManager.addTasks(new Task("погулять с собакой еще раз",
+                "простая, орбычная, задача - обновлена", statusNew));
 
-        taskManager.addEpic(epic1);
-        taskManager.addEpic(epic2);
+        taskManager.addEpic(new Epic(new Task("Переезд", "Это задача -Эпик №1")));
+        taskManager.addEpic(new Epic(new Task("Проект", "Это задача -Эпик №2")));
 
-        taskManager.addSubTasks(newSubTask4);
-        taskManager.addSubTasks(newSubTask5);
-        taskManager.addSubTasks(newSubTask6);
-        taskManager.addSubTasks(newSubTask7);
+        taskManager.addSubTasks(new Subtask(new Task("упаковать коробки",
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusNew), 3));
+        taskManager.addSubTasks(new Subtask(new Task("не забыть кошку",
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew), 3));
+        taskManager.addSubTasks(new Subtask(new Task("написать и согласовать ТЗ",
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew), 4));
 
 
+        System.out.println("Поехали!");
+        //печать списка всех задач.
+        System.out.println("-".repeat(20));
+        System.out.println("получаем списки всех задач");
         System.out.println("-".repeat(20));
         System.out.println(taskManager.getTasks());
         System.out.println("-".repeat(20));
@@ -67,76 +38,51 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println(taskManager.getEpics());
 
-       /* System.out.println("Поехали!");
-        System.out.println(newTask1);
-        System.out.print("Хэшкод: ");
-        System.out.println(newTask1.hashCode());
-        System.out.println(newTask2);
-        System.out.print("Хэшкод: ");
-        System.out.println(newTask2.hashCode());
-        System.out.println(newTask3);
-        System.out.print("Хэшкод: ");
-        System.out.println(newTask3.hashCode());
+        //изменение статусов
+        taskManager.updateTasks(new Task("написать cписок  дел", 1,
+                "простая, орбычная, задача", statusDone));
+        taskManager.updateTasks(new Task("погулять с собакой еще раз", 2,
+                "простая, орбычная, задача - обновлена", statusInProgress));
 
+        taskManager.updateSubTasks(new Subtask(new Task("упаковать коробки", 5,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone), 3));
+        taskManager.updateSubTasks(new Subtask(new Task("не забыть кошку", 6,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone), 3));
+        taskManager.updateSubTasks(new Subtask(new Task("написать и согласовать ТЗ", 7,
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusInProgress), 4));
+
+
+        //печать списка всех задач после смены статусов.
         System.out.println("-".repeat(20));
-
-        System.out.println(newSubTask1);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask1.hashCode());
-        System.out.println(newSubTask2);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask2.hashCode());
-        System.out.println(newSubTask3);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask3.hashCode());
-
+        System.out.println("поменяли статус задач");
         System.out.println("-".repeat(20));
-
-        System.out.println(newSubTask4);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask4.hashCode());
-        System.out.println(newSubTask5);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask5.hashCode());
-        System.out.println(newSubTask6);
-        System.out.print("Хэшкод: ");
-        System.out.println(newSubTask6.hashCode());
-
+        System.out.println(taskManager.getTasks());
         System.out.println("-".repeat(20));
-
-        System.out.println("сравнение объектов");
-        System.out.println();
-        System.out.println(newTask1.name
-                + ", " + newTask1.id + " - 'равен' - " + newTask2.name + ", " + newTask2.id
-                + " ---" + newTask1.equals(newTask2));
-        System.out.println(newTask2.name
-                + " - 'равен' - "
-                + ", " + newTask1.id + " - 'равен' - " + newTask3.name + ", " + newTask3.id
-                + " ---" + newTask2.equals(newTask3));
-        System.out.println(newTask1.name
-                + ", " + newTask1.id + " - 'равен' - " + newTask1.name + ", " + newTask1.id
-                + " ---" + newTask1.equals(newTask1));
-
+        System.out.println(taskManager.getSubTasks());
         System.out.println("-".repeat(20));
+        System.out.println(taskManager.getEpics());
 
-        System.out.println(newSubTask1.name
-                + ", " + newSubTask1.id + " - 'равен' - " + newSubTask2.name + ", " + newSubTask2.id
-                + " ---" + newSubTask1.equals(newSubTask2));
 
-        System.out.println(newSubTask2.name
-                + ", " + newSubTask2.id + " - 'равен' - " + newSubTask3.name + ", " + newSubTask3.id
-                + " ---" + newSubTask2.equals(newSubTask3));
-
-        System.out.println(newSubTask1.name
-                + ", " + newSubTask1.id + " - 'равен' - " + newSubTask7.name + ", " + newSubTask7.id
-                + " ---" + newSubTask1.equals(newSubTask7));
-
+        //f. Удаление по идентификатору.
         System.out.println("-".repeat(20));
-        System.out.println("распечатка Эпиков");
-        System.out.println();
-        System.out.println(epic1);
-        System.out.println(epic2);
-*/
+        System.out.println("удаляем объекты по идентификатору");
+        System.out.println("-".repeat(20));
+        System.out.println(taskManager.getByIDtasks(1));
+        taskManager.delByIDtasks(1);
+        System.out.println(taskManager.getByIDtasks(1));
+        System.out.println("-".repeat(20));
+        System.out.println(taskManager.getByIDepics(4));
+        taskManager.delByIDepics(4);
+        System.out.println(taskManager.getByIDepics(4));
 
+        //печать списка всех задач после удеаления.
+        System.out.println("-".repeat(20));
+        System.out.println("что осталось после удаления задачи и эпика");
+        System.out.println("-".repeat(20));
+        System.out.println(taskManager.getTasks());
+        System.out.println("-".repeat(20));
+        System.out.println(taskManager.getSubTasks());
+        System.out.println("-".repeat(20));
+        System.out.println(taskManager.getEpics());
     }
 }
