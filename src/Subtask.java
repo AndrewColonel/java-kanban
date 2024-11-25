@@ -1,10 +1,11 @@
 // класс описывающий подзадау, наследует базовый класс Task
 
 public class Subtask extends Task {
-   private int epicID;
+    private int epicID;
 
-    public Subtask(Task task, int epicID) {
-        super(task.name, task.id, task.description, task.status); // вызов соотвесвтующего контсруткора базового класса
+    public Subtask(String name, String description, TaskStatus status, int epicID) {
+        //TODO не нужно из Task делать Subtask. Параметризуй конструктор Subtask теми же полями + epicID
+        super(name, description, status);
         this.epicID = epicID;
     }
 
@@ -12,6 +13,9 @@ public class Subtask extends Task {
         return epicID;
     }
 
+    public void setEpicID(int epicID) {
+        this.epicID = epicID;
+    }
     //переопределяем метод toString() для олрганизации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override

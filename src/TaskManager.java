@@ -2,27 +2,32 @@
 
 import java.util.ArrayList;
 import java.util.HashMap;
+//TODO общий комментарий к классу: обращайся к полям классов через геттеры и сеттеры
+
 
 public class TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - Task, SubTask, Epic
-    // модификаторы доступа - по-умолчанию
-    HashMap<Integer, Task> tasks = new HashMap<>();
-    HashMap<Integer, Epic> epics = new HashMap<>();
-    HashMap<Integer, Subtask> subTasks = new HashMap<>();
+    // TODO хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
+    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, Epic> epics = new HashMap<>();
+    private HashMap<Integer, Subtask> subTasks = new HashMap<>();
     private int nextId = 1; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
 
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //a. Получение списка всех задач.
+//TODO метод должен возвращать список, т.е. ArrayList типа Task
     public HashMap<Integer, Task> getTasks() {
         return tasks;
     }
 
     public HashMap<Integer, Subtask> getSubTasks() {
+        //TODO метод должен возвращать список, т.е. ArrayList типа SubTask
         return subTasks;
     }
 
     public HashMap<Integer, Epic> getEpics() {
+        //TODO метод должен возвращать список, т.е. ArrayList типа Epic
         return epics;
     }
 
@@ -32,10 +37,14 @@ public class TaskManager {
     }
 
     public void delSubTasks() {
+        //TODO метод удаления всех подзадач, должен привести к
+        // очистке внутренних хранилищ всех эпиков и пересчету их статусов
         subTasks.clear();
     }
 
     public void delEpics() {
+        //TODO метод удаления всех эпиков, должен удалить также и подзадачи,
+        // поскольку они сами по себе не существуют
         epics.clear();
     }
 
@@ -43,6 +52,8 @@ public class TaskManager {
     public Task getByIDtasks(int id) {
         Task task = null;
         if (!tasks.isEmpty()) {
+            //TODO можно убрать эту проверку, если в мапе нет значения этого ключа,
+            // то она возвращает тот же null  и не разваливается
             task = tasks.get(id);
         }
         return task;
@@ -51,6 +62,8 @@ public class TaskManager {
     public Subtask getByIDsubTasks(int id) {
         Subtask subTask = null;
         if (!subTasks.isEmpty()) {
+            //TODO можно убрать эту проверку, если в мапе нет значения этого ключа,
+            // то она возвращает тот же null  и не разваливается
             subTask = subTasks.get(id);
         }
         return subTask;
@@ -59,6 +72,8 @@ public class TaskManager {
     public Epic getByIDepics(int id) {
         Epic epic = null;
         if (!epics.isEmpty()) {
+            //TODO можно убрать эту проверку, если в мапе нет значения этого ключа,
+            // то она возвращает тот же null  и не разваливается
             epic = epics.get(id);
         }
         return epic;
@@ -75,9 +90,16 @@ public class TaskManager {
         subTasks.put(subtask.id, subtask);
         if (!epics.isEmpty()) {
             Epic epic = epics.get(subtask.getEpicID()); //ищем необходимый эпик для добавления подзадачи
+            //TODO подзадачи создаются только как декомпозиция эпика, поэтому проверку на
+            // существование эпика нужно сделать первым делом в методе. Если эпика нет,
+            // то подзадача не получает id и не сохраняется в subTasks
             if (epic != null) { //если такой эпик нашелся
                 ArrayList<Integer> subTasksIDs = epic.getSubTasksIDs();
-                subTasksIDs.add(subtask.id); // добавляем в список новый уникальный ID подзадачи
+                subTasksIDs.add(subtask.id);
+                //TODO для этого действия предложил добавить специальный метод в классе Epic,
+                // а здесь им воспользоваться
+
+                // добавляем в список новый уникальный ID подзадачи
                 calculateEpicStatus(epic); // добавилась новая подзадача, расчитаем статус эпика
             }
         }
@@ -90,10 +112,20 @@ public class TaskManager {
 
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     public void updateTasks(Task task) {
+        //TODO обновляется только та задача, которая ранее была в tasks
         tasks.put(task.id, task);
     }
 
     public void updateSubTasks(Subtask subtask) {
+        /*TODO давай в виде алгоритма в целом опишу логику обновления подзадачи, думаю так будет понятнее
+           1) проверяем есть ли такая подзадача, не существующую подзадачу не обновляем
+           2) По замыслу сервиса подзадачи не переходят между Эпиками (это и логично, подзадача из Эпика ген уборка,
+           вряд ли пригодится Эпику получение высшего образования). поэтому проверяем равен ли epicID в новой подзадаче
+           со значением epicID подзадачи, которая уже была ранее в хранилище subTasks
+           3) Обновляем подзадачу в хранилище subTasks
+           4) Пересчитываем статус Эпика, к которой прилинкована эта подзадача */
+
+
         subTasks.put(subtask.id, subtask);
 
         if (!epics.isEmpty()) {
@@ -105,23 +137,33 @@ public class TaskManager {
     }
 
     public void updateEpic(Epic epic) {
+        /*TODO для обновления Эпика просто заменить в мапе недостаточно. У эпика такие атрибуты как Status и
+           список связанных с ним подзадач (subTasksIDs) определяется не самим эпиком, а его подзадачами.
+           Поэтому фактически метод updateEpic(Epic epic) может обновить всего два поля: name и description.
+           Поэтому нужно вручную переложить значения этих полей в Эпик, который уже есть в хранилище.
+           Соответственно, если там такого id нет, то ничего не делаем*/
+
+
         epics.put(epic.id, epic);
     }
 
     //f. Удаление по идентификатору.
     public void delByIDtasks(int id) {
         if (!tasks.isEmpty()) {
+
             tasks.remove(id);
         }
     }
 
     public void delByIDsubTasks(int id) {
         if (!subTasks.isEmpty()) {
+            //TODO нужно еще удалить подзадачу из внутреннего хранилища эпика и пересчитать ему статус
             subTasks.remove(id);
         }
     }
 
     public void delByIDepics(int id) {
+        //TODO еще нужно удалить из subTasks все связанные с эпиком подзадачи
         if (!epics.isEmpty()) {
             epics.remove(id);
         }
@@ -129,11 +171,14 @@ public class TaskManager {
 
     //Дополнительные методы - получение списка всех подзадач определённого эпика
     public ArrayList<Integer> getSubTasksList(Epic epic) {
+        //TODO сигнатуру метода нужно сделать такой public ArrayList<SubTask> getSubTasksList (int epicId)
         return epic.getSubTasksIDs();
     }
 
     // метод расчета статуса эпика в зависимости от статусов подзадач
     public void calculateEpicStatus(Epic epic) {
+        //TODO метод не должен быть публичным, так как является частью реализации
+        // и не должен быть виден или доступен для внешних потребителей
         if (epic != null) { //если такой эпик нашелся
             int countNew = 0;
             int countDone = 0;
