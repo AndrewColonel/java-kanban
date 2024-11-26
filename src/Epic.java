@@ -1,15 +1,16 @@
 // Большая задача, которая делится на подзадачи, называется эпиком. Наследует Task
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> subTasksIDs;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
-    public Epic(String name, String description) {
+    public Epic(String name, int id, String description) {
         //Параметризуем конструктор Epic полями name и description
         // статус уже в родительском конструкторе заполнится значением NEW
-        super(name, description);// вызов соотвесвтующего контсруткора базового класса
+        super(name, id, description);// вызов соотвесвтующего контсруткора базового класса
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
     }
 
@@ -30,8 +31,10 @@ public class Epic extends Task {
 
     //в этот класс нужно добавить три метода
     // 1) удалит единичную подзадачу из хранилища subTasksIDs
-    public void delSubTaskID(int id) {
-        subTasksIDs.remove(id);
+    public void delSubTaskID(Integer id) {
+        if (subTasksIDs.contains(id)) {
+            subTasksIDs.remove(id);
+        }
     }
 
     // 2) очистит все данные хранилища subTasksIDs
@@ -40,8 +43,10 @@ public class Epic extends Task {
     }
 
     // 3) добавит единичную подзадачу в хранилище subTasksIDs
-    public void addSubTaskID(int id) {
-        subTasksIDs.add(id);
+    public void addSubTaskID(Integer id) {
+        if (!subTasksIDs.contains(id)) {
+            subTasksIDs.add(id);
+        }
     }
 
     //переопределяем метод toString() для олрганизации вывода информации об объекте, будет переопределен в каждом

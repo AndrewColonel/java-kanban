@@ -10,16 +10,18 @@ public class Task {
     private String description;
     private TaskStatus status;
 
-    //констурктор для задач и подзадач без учета id
-    public Task(String name, String description, TaskStatus status) {
+    //констурктор для задач и подзадач
+    public Task(String name, int id, String description, TaskStatus status) {
         this.name = name;
+        this.id = id;
         this.description = description;
         this.status = status;
     }
 
     //констурктор для создания эпиков, без учета id
-    public Task(String name, String description) {
+    public Task(String name, int id,  String description) {
         this.name = name;
+        this.id = id;
         this.description = description;
         status = TaskStatus.NEW; //для Эпиков при создании status должен быть NEW, а не оставаться null
     }

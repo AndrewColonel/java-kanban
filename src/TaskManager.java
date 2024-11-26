@@ -106,7 +106,6 @@ public class TaskManager {
     }
 
     public void addSubTasks(Subtask subtask) {
-
         if (epics.containsKey(subtask.getEpicID())) { //если такой эпик нашелся
             Epic epic = epics.get(subtask.getEpicID()); //ищем необходимый эпик для добавления подзадачи
             subtask.setId(nextId++); // то подзадача получает id
@@ -125,10 +124,8 @@ public class TaskManager {
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     public void updateTasks(Task task) {
         // обновляется только та задача, которая ранее была в tasks
-        if (tasks.containsValue(task)) {
-            Task task1 = tasks.get(task.getId());
-            task1 = task;
-
+        if (tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
         }
     }
 
@@ -171,12 +168,16 @@ public class TaskManager {
 //            }
 //        }
 
-//        public void delByIDsubTasks ( int id){
-//            if (!subTasks.isEmpty()) {
-//                //TODO нужно еще удалить подзадачу из внутреннего хранилища эпика и пересчитать ему статус
-//                subTasks.remove(id);
-//            }
-//        }
+    public void delSubTasksByID(int id) { // удаляя SubTask по ID
+        // нужно еще удалить подзадачу из внутреннего хранилища эпика и пересчитать ему статус
+        if (subTasks.containsKey(id)) {
+            Subtask subTask = subTasks.get(id);
+            Epic epic = epics.get(subTask.getEpicID());
+            epic.delSubTaskID(id);
+            calculateEpicStatus(epic);
+            subTasks.remove(id);
+        }
+    }
 
 //        public void delByIDepics ( int id){
 //            //TODO еще нужно удалить из subTasks все связанные с эпиком подзадачи

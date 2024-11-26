@@ -3,9 +3,9 @@
 public class Subtask extends Task {
     private int epicID;
 
-    public Subtask(String name, String description, TaskStatus status, int epicID) {
+    public Subtask(String name, int id, String description, TaskStatus status, int epicID) {
         //Параметризуtv конструктор Subtask полями базового класса + epicID
-        super(name, description, status);
+        super(name,id, description, status);
         this.epicID = epicID;
     }
 
