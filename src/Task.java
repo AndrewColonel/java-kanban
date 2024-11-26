@@ -4,12 +4,11 @@
 import java.util.Objects;
 
 public class Task {
-    // поля базового класса с модификатором protected для предоставления доступа из классов-наследников
-    //TODO для всех атрибутов класса нужны геттеры и сеттеры
-    protected String name;
-    protected int id;
-    protected String description;
-    protected TaskStatus status;
+    // поля базового класса
+    private String name;
+    private int id;
+    private String description;
+    private TaskStatus status;
 
     //констурктор для задач и подзадач без учета id
     public Task(String name, String description, TaskStatus status) {
@@ -18,31 +17,14 @@ public class Task {
         this.status = status;
     }
 
-    //констурктор для переопределения задач и подзадач, с учетом id
-//    public Task(String name, int id, String description, TaskStatus status) {
-//        this.name = name;
-//        this.id = id;
-//        this.description = description;
-//        this.status = status;
-//    }
-
     //констурктор для создания эпиков, без учета id
     public Task(String name, String description) {
-        //TODO для Эпиков при создании status должен быть NEW, а не оставаться null
         this.name = name;
         this.description = description;
-        status = TaskStatus.NEW;
+        status = TaskStatus.NEW; //для Эпиков при создании status должен быть NEW, а не оставаться null
     }
 
-    //констурктор для переопределения эпиков, с учетом id
-//    public Task(String name, int id, String description) {
-//        //TODO для Эпиков при создании status должен быть NEW, а не оставаться null
-//        this.name = name;
-//        this.id = id;
-//        this.description = description;
-//        status = TaskStatus.NEW;
-//    }
-
+    // для всех атрибутов класса нужны геттеры и сеттеры
     public String getName() {
         return name;
     }

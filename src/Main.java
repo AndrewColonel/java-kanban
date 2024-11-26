@@ -16,15 +16,17 @@ public class Main {
         taskManager.addTasks(new Task("погулять с собакой еще раз",
                 "простая, орбычная, задача - обновлена", statusNew));
 
-        taskManager.addEpic(new Epic(new Task("Переезд", "Это задача -Эпик №1")));
-        taskManager.addEpic(new Epic(new Task("Проект", "Это задача -Эпик №2")));
+        taskManager.addEpic(new Epic("Переезд", "Это задача -Эпик №1"));
+        taskManager.addEpic(new Epic("Проект", "Это задача -Эпик №2"));
 
-        taskManager.addSubTasks(new Subtask(new Task("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusNew), 3));
-        taskManager.addSubTasks(new Subtask(new Task("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew), 3));
-        taskManager.addSubTasks(new Subtask(new Task("написать и согласовать ТЗ",
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew), 4));
+        taskManager.addSubTasks(new Subtask("упаковать коробки",
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 3));
+        taskManager.addSubTasks(new Subtask("не забыть кошку",
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
+        taskManager.addSubTasks(new Subtask("написать и согласовать ТЗ",
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
+
+
 
 
         System.out.println("Поехали!");
@@ -32,14 +34,24 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println("получаем списки всех задач");
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getTasks());
+        System.out.println(taskManager.getTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getSubTasks());
+        System.out.println(taskManager.getSubTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getEpicsList());
+
+
+        taskManager.updateTasks(new Task("написать cписок  дел",
+                "простая, орбычная, задача", statusDone));
+        taskManager.updateTasks(new Task("погулять с собакой еще раз", 2,
+                "простая, орбычная, задача - обновлена", statusInProgress));
+
+        taskManager.updateSubTasks(new Subtask(new Task("упаковать коробки", 5,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone), 3));
+
 
         //изменение статусов
-        taskManager.updateTasks(new Task("написать cписок  дел", 1,
+       /* taskManager.updateTasks(new Task("написать cписок  дел", 1,
                 "простая, орбычная, задача", statusDone));
         taskManager.updateTasks(new Task("погулять с собакой еще раз", 2,
                 "простая, орбычная, задача - обновлена", statusInProgress));
@@ -56,11 +68,11 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println("поменяли статус задач");
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getTasks());
+        System.out.println(taskManager.getTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getSubTasks());
+        System.out.println(taskManager.getSubTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getEpicsList());
 
 
         //f. Удаление по идентификатору.
@@ -79,10 +91,10 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println("что осталось после удаления задачи и эпика");
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getTasks());
+        System.out.println(taskManager.getTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getSubTasks());
+        System.out.println(taskManager.getSubTasksList());
         System.out.println("-".repeat(20));
-        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getEpicsList());*/
     }
 }

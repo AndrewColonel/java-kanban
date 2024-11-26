@@ -4,11 +4,12 @@ public class Subtask extends Task {
     private int epicID;
 
     public Subtask(String name, String description, TaskStatus status, int epicID) {
-        //TODO не нужно из Task делать Subtask. Параметризуй конструктор Subtask теми же полями + epicID
+        //Параметризуtv конструктор Subtask полями базового класса + epicID
         super(name, description, status);
         this.epicID = epicID;
     }
 
+    // для всех атрибутов класса нужны геттеры и сеттеры
     public int getEpicID() {
         return epicID;
     }
@@ -21,11 +22,11 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "Subtask{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
-                ", epicID=" + epicID +
-                ", description='" + description + '\'' +
-                ", status=" + status +
+                "name='" + getName() + '\'' +
+                ", id=" + getId() +
+                ", epicID=" + getEpicID() +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
                 '}';
     }
 }
