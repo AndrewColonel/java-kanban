@@ -11,31 +11,6 @@ public class TaskManager {
     private HashMap<Integer, Subtask> subTasks = new HashMap<>();
     private int nextId = 1; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
 
-    // для всех атрибутов класса нужны геттеры и сеттеры
-    public HashMap<Integer, Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(HashMap<Integer, Task> tasks) {
-        this.tasks = tasks;
-    }
-
-    public HashMap<Integer, Epic> getEpics() {
-        return epics;
-    }
-
-    public void setEpics(HashMap<Integer, Epic> epics) {
-        this.epics = epics;
-    }
-
-    public HashMap<Integer, Subtask> getSubTasks() {
-        return subTasks;
-    }
-
-    public void setSubTasks(HashMap<Integer, Subtask> subTasks) {
-        this.subTasks = subTasks;
-    }
-
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
     public ArrayList<Task> getTasksList() {
@@ -75,7 +50,7 @@ public class TaskManager {
         for (Integer i : epics.keySet()) {
             Epic epic = epics.get(i);
             epic.delAllSubTasksIDs(); //также очищает внутренние хранилища всех эпиков
-            epic.setStatus(TaskStatus.NEW);//и выставляет статус очищенных эпиков в NEW
+            calculateEpicStatus(epic);//и выставляет статус очищенных эпиков в NEW
         }
         subTasks.clear();
     }
@@ -106,7 +81,7 @@ public class TaskManager {
     }
 
     public void addSubTasks(Subtask subtask) {
-        if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи  эпик нашелся
+        if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи эпик нашелся
             subtask.setId(nextId++); // то подзадача получает id
             subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
             Epic epic = epics.get(subtask.getEpicID()); //вытаскиваем необходимый эпик для добавления подзадачи
@@ -200,6 +175,7 @@ public class TaskManager {
         if (epic != null) { //если такой эпик нашелся
             int countNew = 0;
             int countDone = 0;
+            epic.setStatus(TaskStatus.NEW);
             ArrayList<Integer> subTasksIDs = epic.getSubTasksIDs(); // вытаскиваем список подзадач данного эпика
             for (Integer i : subTasksIDs) { //перебираем этот список подзадач
                 Subtask subtask = subTasks.get(i); //вытаскиваем каждую подзадачу

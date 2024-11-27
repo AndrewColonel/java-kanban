@@ -43,7 +43,7 @@ public class Main {
         taskManager.addSubTasks(new Subtask("написать и согласовать еще ТЗ2",
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusInProgress, 4));
 
-        //оьбновление  и изменение статусов
+        //обновление и изменение статусов
         taskManager.updateTasks(new Task("написать cписок  дел", 1,
                 "простая, обычная, задача", statusDone));
         taskManager.updateTasks(new Task("погулять с собакой еще раз", 2,
@@ -64,7 +64,7 @@ public class Main {
         System.out.println();
         System.out.println();
         System.out.println("-".repeat(20));
-        System.out.println("поменяли статус задач и добавили позадачу в Эпик4");
+        System.out.println("поменяли статус задач и добавили подзадачу в Эпик4");
         System.out.println("-".repeat(20));
         System.out.println(taskManager.getTasksList());
         System.out.println("-".repeat(20));
@@ -103,7 +103,7 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println("Удаляем Epic 4:");
         System.out.println(taskManager.getEpicByID(4));
-        System.out.println("и соответсвенно его подзадачи:");
+        System.out.println("и соответственно его подзадачи:");
         System.out.println(taskManager.getSubTasksListByEpic(4));
         taskManager.delEpicByID(4);
         System.out.println("проверяем удаление Epic 4 и его подзадач");
@@ -130,7 +130,7 @@ public class Main {
         System.out.println(taskManager.getSubTasksList());
         System.out.println(taskManager.getEpicsList());
         System.out.println("-".repeat(20));
-        System.out.println("удаляем Эпики и соответсвующие подзадачи");
+        System.out.println("удаляем Эпики и соответствующие подзадачи");
         System.out.println(taskManager.getEpicsList());
         System.out.println(taskManager.getSubTasksList());
         taskManager.delEpics();

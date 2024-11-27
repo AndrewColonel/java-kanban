@@ -28,13 +28,6 @@ public class Epic extends Task {
         return subTasksIDs;
     }
 
-    public void setSubTasksIDs(ArrayList<Integer> subTasksIDs) {
-        this.subTasksIDs = subTasksIDs;
-    }
-
-    //сеттер для статуса эпика - в родительском классе
-
-
     //в этот класс нужно добавить три метода
     // 1) удалит единичную подзадачу из хранилища subTasksIDs
     public void delSubTaskID(Integer id) {

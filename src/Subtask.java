@@ -5,7 +5,7 @@ public class Subtask extends Task {
 
     public Subtask(String name, String description, TaskStatus status, int epicID) {
         //Параметризуем конструктор  для создания Subtask полями базового класса + epicID
-        super(name,description, status);
+        super(name, description, status);
         this.epicID = epicID;
     }
 
@@ -16,14 +16,10 @@ public class Subtask extends Task {
         this.epicID = epicID;
     }
 
-    // для всех атрибутов класса нужны геттеры и сеттеры
     public int getEpicID() {
         return epicID;
     }
 
-    public void setEpicID(int epicID) {
-        this.epicID = epicID;
-    }
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override
