@@ -1,5 +1,5 @@
-// публичный не абстрактный базовый класс Task, который представляет "простую" задачу.
-// Базовый класс для позадач и эпика.
+//Публичный не абстрактный базовый класс Task, который представляет "простую" задачу.
+// Базовый класс для подзадач и эпика.
 
 import java.util.Objects;
 
@@ -10,7 +10,14 @@ public class Task {
     private String description;
     private TaskStatus status;
 
-    //констурктор для задач и подзадач
+    //Конструктор для создания новых задач и подзадач
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    //конструктор для обновления существующих задач и подзадач
     public Task(String name, int id, String description, TaskStatus status) {
         this.name = name;
         this.id = id;
@@ -18,12 +25,21 @@ public class Task {
         this.status = status;
     }
 
-    //констурктор для создания эпиков, без учета id
-    public Task(String name, int id,  String description) {
+    //конструктор используется для создания эпиков
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        //для Эпиков при создании status должен быть NEW, а не оставаться null
+        status = TaskStatus.NEW;
+    }
+
+    //конструктор используется для обновления существующих эпиков
+    public Task(String name, int id, String description) {
         this.name = name;
         this.id = id;
         this.description = description;
-        status = TaskStatus.NEW; //для Эпиков при создании status должен быть NEW, а не оставаться null
+        //для Эпиков при создании status должен быть NEW, а не оставаться null
+        status = TaskStatus.NEW;
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры
@@ -59,7 +75,7 @@ public class Task {
         this.status = status;
     }
 
-    //переопределяем метод toString() для олрганизации вывода информации об объекте, будет переопределен в каждом
+    //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override
     public String toString() {
@@ -83,7 +99,7 @@ public class Task {
         return id == task.id;
     }
 
-    // переопределяем метод расчета Хэш кода объекта. В расчетет будуи принимать участие все поля.
+    //Переопределяем метод расчета Хэш кода объекта. В расчете будут принимать участие все поля.
     @Override
     public int hashCode() {
         return Objects.hash(name, id, description, status);
