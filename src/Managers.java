@@ -1,8 +1,11 @@
-public class Managers<T extends TaskManager> {
+public class Managers {
 
-    public T getDefault() {
-        T taskManager = new TaskManager();
-        return taskManager;
+    public  static  TaskManager getDefault() {
+         return new InMemoryTaskManager();
+    }
+
+    public static HistoryManager getDefaultHistory() {
+        return new InMemoryHistoryManager();
     }
 
 }

@@ -11,7 +11,9 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private HashMap<Integer, Subtask> subTasks = new HashMap<>();
     private int nextId = 1; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
-    private List<Task> histortyList = new ArrayList<>();
+    //private List<Task> historyList = new ArrayList<>(); - перернесен в InMemoryHistoryManager
+    HistoryManager historyManager = Managers.getDefaultHistory();
+
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
@@ -70,39 +72,31 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     //истории просмотров задач
+    @Override
     public List<Task> getHistory() {
-        return histortyList;
+        return historyManager.getHistory();
     }
 
-    //метод для контроля размера списка
-    public void histortyListCheck() {
-        if (histortyList.size() == 10) {
-            histortyList.removeFirst();
-        }
-    }
 
     //с. Получение по идентификатору.
     @Override
     public Task getTaskByID(int id) {
         Task task = tasks.get(id);
-        histortyListCheck();
-        histortyList.add(task);
+        historyManager.add(task);
         return task;
     }
 
     @Override
     public Subtask getSubTaskByID(int id) {
         Subtask subtask = subTasks.get(id);
-        histortyListCheck();
-        histortyList.add(subtask);
+        historyManager.add(subtask);
         return subtask;
     }
 
     @Override
     public Epic getEpicByID(int id) {
         Epic epic = epics.get(id);
-        histortyListCheck();
-        histortyList.add(epic);
+        historyManager.add(epic);
         return epic;
     }
 

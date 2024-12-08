@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
@@ -15,6 +16,9 @@ public interface TaskManager {
     void delSubTasks();
 
     void delEpics();
+
+
+    List<Task> getHistory();
 
     //с. Получение по идентификатору.
     Task getTaskByID(int id);
