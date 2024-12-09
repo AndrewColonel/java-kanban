@@ -12,6 +12,7 @@ class InMemoryTaskManagerTest {
     static TaskStatus statusInProgress;
     static TaskStatus statusDone;
     static TaskManager manager;
+    static HistoryManager historyManager;
     static Task task1;
     static Task task2;
     static Epic epic1;
@@ -26,6 +27,7 @@ class InMemoryTaskManagerTest {
         statusInProgress = TaskStatus.IN_PROGRESS;
         statusDone = TaskStatus.DONE;
         manager = Managers.getDefault();
+        historyManager = Managers.getDefaultHistory();
 
         task1 = new Task("Тест создания Таск 1",
                 "описание Таск 1", statusNew);
@@ -42,22 +44,29 @@ class InMemoryTaskManagerTest {
         subTask3 = new Subtask("Тест создания Подзадачи 3", 0,
                 "Это подзадача для Эпика", statusNew, 4);
 
-        manager.addTasks(task1);
-        manager.addTasks(task2);
-        manager.addEpic(epic1);
-        manager.addEpic(epic2);
-        manager.addSubTasks(subTask1);
-        manager.addSubTasks(subTask2);
-        manager.addSubTasks(subTask3);
+//        manager.addTasks(task1);
+//        manager.addTasks(task2);
+//        manager.addEpic(epic1);
+//        manager.addEpic(epic2);
+//        manager.addSubTasks(subTask1);
+//        manager.addSubTasks(subTask2);
+//        manager.addSubTasks(subTask3);
 
+    }
+
+    @Test
+    void  utilityClassMakeObjects() {
+        //утилитарный класс всегда возвращает проинициализированные и готовые к работе экземпляры менеджеров
+        assertNotNull(manager, "Менеджер не создан");
+        assertNotNull(historyManager, "Менеджер не создан");
     }
 
 
 
 //    @Test
 //    void addNewTask() {
-//        Task task = new Task("Test addNewTask", "Test addNewTask description", NEW);
-//        final int taskId = taskManager.addNewTask(task);
+//        manager.addTasks(task1);
+//        final int taskId = task1.getId();
 //
 //        final Task savedTask = taskManager.getTask(taskId);
 //

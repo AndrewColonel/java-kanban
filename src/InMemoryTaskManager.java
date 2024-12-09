@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - Task, SubTask, Epic
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private

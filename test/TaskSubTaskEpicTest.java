@@ -86,19 +86,22 @@ class TaskSubTaskEpicTest {
 
     @Test
     void subTaskShouldNOTBeEpic() { //проверяем, что объект Subtask нельзя сделать своим же эпиком;
-        //Subtask станет своим же эпиком, если его id и id его же эпика будут равны
+        //Subtask станет своим же эпиком, если его id и id его  эпика будут равны
         int epicID = subTask1.getEpicID(); // получаем ID эпика данного Subtask
         subTask1.setId(epicID); // принудительно меняем id самого Subtask на ID ее же эпика
         manager.addSubTasks(subTask1);//добавляем Подзадачу через менеджер
-        Subtask subtask = manager.getSubTaskByID(epicID); //запрашиваемsq Subtask не должен быть получен
+        Subtask subtask = manager.getSubTaskByID(epicID); //запрашиваемый Subtask не должен быть получен
         assertNull(subtask, "Задача найдена!");
     }
 
     @Test
     void epicShouldNOTBeAddedLikeEpic() { //проверяем, что объект Epic нельзя добавить в самого себя в виде подзадачи;
-        //TODO
+        //добавить Epic сам в себя в виде подзадачи, это добавить его id в хранилище subTasksIDs
+        int epicID  = epic1.getId(); //получаем id Эпика
+        epic1.addSubTaskID(epicID); // передаем его в хранилище subTasksIDs
+        Subtask subtask = manager.getSubTaskByID(epicID); //запрашиваемый Subtask не должен быть получен
+        assertNull(subtask, "Задача найдена!");
 
     }
-
 
 }

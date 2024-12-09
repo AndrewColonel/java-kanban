@@ -6,7 +6,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> historyList;
 
     public InMemoryHistoryManager() {
-        historyList = new ArrayList<>();;
+        historyList = new ArrayList<>();
     }
 
     //истории просмотров задач
