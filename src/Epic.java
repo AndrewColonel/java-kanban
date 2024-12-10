@@ -41,7 +41,9 @@ public class Epic extends Task {
 
     // 3) добавит единичную подзадачу в хранилище subTasksIDs
     public void addSubTaskID(Integer id) {
-        if (!subTasksIDs.contains(id)) {
+        if (!subTasksIDs.contains(id) && id!=this.getId()) {
+            //добавлена условие для коррекции ошибки - совпадения id эпика и подзадачи
+            //чтобы эпик нельзя было добавить в себя же как подзадачу
             subTasksIDs.add(id);
         }
     }

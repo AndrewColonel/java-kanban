@@ -8,19 +8,15 @@ public class Main {
 
         //создаем экземпляр менеджераR
         // InMemoryTaskManager InMemoryTaskManager = new InMemoryTaskManager();
+        //TaskManager manager = new InMemoryTaskManager();
+
+        // эксперимент с явным приведением типов
+        //TaskManager taskManager = Managers.getDefault();
+        //if (taskManager instanceof InMemoryTaskManager) {
+        //InMemoryTaskManager manager = (InMemoryTaskManager) taskManager;
 
         //для выбора реализации Менеджера, использую метод утилитарного класса
         TaskManager manager = Managers.getDefault();
-
-        //TaskManager manager = new InMemoryTaskManager();
-
-
-        // эксперимент с явным приведением типов
-//        TaskManager taskManager = Managers.getDefault();
-//        if (taskManager instanceof InMemoryTaskManager) {
-//            InMemoryTaskManager manager = (InMemoryTaskManager) taskManager;
-//        }
-
 
         //Создание задач, эпиков и подзадач. Объекта передается в качестве параметра
         manager.addTasks(new Task("написать cписок дел",
