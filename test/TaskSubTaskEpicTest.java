@@ -1,9 +1,16 @@
-//проверьте, что экземпляры класса Task равны друг другу, если равен их id;
-//проверьте, что наследники класса Task равны друг другу, если равен их id;
-//проверьте, что объект Subtask нельзя сделать своим же эпиком;
-//проверьте, что объект Epic нельзя добавить в самого себя в виде подзадачи;
+//проверьте, что экземпляры класса model.Task равны друг другу, если равен их id;
+//проверьте, что наследники класса model.Task равны друг другу, если равен их id;
+//проверьте, что объект model.Subtask нельзя сделать своим же эпиком;
+//проверьте, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
 
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
 import org.junit.jupiter.api.*;
+import service.Managers;
+import service.TaskManager;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskSubTaskEpicTest {
@@ -46,7 +53,7 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void taskShouldBeEqualsByID() { //проверяем, что экземпляры класса Task равны друг другу, если равен их id;
+    void taskShouldBeEqualsByID() { //проверяем, что экземпляры класса model.Task равны друг другу, если равен их id;
         final int taskID = 1;
         task1.setId(taskID);
         task2.setId(taskID);
@@ -56,7 +63,7 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicsShouldBeEqualsByID() { //проверяем, что наследники класса Task - Epic равны друг другу, если равен их id;
+    void epicsShouldBeEqualsByID() { //проверяем, что наследники класса model.Task - model.Epic равны друг другу, если равен их id;
         final int epicID = 1;
         epic1.setId(epicID);
         epic2.setId(epicID);
@@ -66,7 +73,7 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void subTaskShouldBeEqualsByID() { //проверьте, что наследники класса Task - SubTask равны, если равен их id;
+    void subTaskShouldBeEqualsByID() { //проверьте, что наследники класса model.Task - SubTask равны, если равен их id;
         final int subTaskID = 1;
         subTask1.setId(subTaskID);
         subTask2.setId(subTaskID);
@@ -76,12 +83,12 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void subTaskShouldNOTBeEpic() { //проверяем, что объект Subtask нельзя сделать своим же эпиком;
+    void subTaskShouldNOTBeEpic() { //проверяем, что объект model.Subtask нельзя сделать своим же эпиком;
         //по условиям ТЗ4 - для каждой подзадачи известно, в рамках какого эпика она выполняется,
         //на основании заполнения поля EpicID
-        // Subtask станет своим же эпиком, если его id будет равно id его же эпика
-        int epicID = subTask1.getEpicID(); // получаем ID эпика данного Subtask
-        subTask1.setId(epicID); // принудительно меняем id самого Subtask на ID ее же эпика
+        // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
+        int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
+        subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
         manager.addSubTasks(subTask1);//добавляем Подзадачу через менеджер в общее хранилище подзадач
         Subtask subtask = manager.getSubTaskByID(epicID);
         //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
@@ -90,9 +97,9 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicShouldNOTBeAddedLikeEpic() { //проверяем, что объект Epic нельзя добавить в самого себя в виде подзадачи;
+    void epicShouldNOTBeAddedLikeEpic() { //проверяем, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
         // по условиям ТЗ4 - Каждый эпик знает, какие подзадачи в него входят.
-        //добавить Epic сам в себя в виде подзадачи, это добавить его id в хранилище subTasksIDs
+        //добавить model.Epic сам в себя в виде подзадачи, это добавить его id в хранилище subTasksIDs
         int epicID = epic1.getId(); //получаем id Эпика
         epic1.addSubTaskID(epicID); // передаем его в хранилище subTasksIDs и пытаемся получить обратно
         assertFalse(epic1.getSubTasksIDs().contains(epicID), "Задача найдена!");

@@ -1,8 +1,15 @@
-//убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
+//убедитесь, что задачи, добавляемые в service.HistoryManager, сохраняют предыдущую версию задачи и её данных.
 
 import java.util.List;
 
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
 import org.junit.jupiter.api.*;
+import service.HistoryManager;
+import service.Managers;
+import service.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +56,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addHistoryCheck() {
-        //убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
+        //убедитесь, что задачи, добавляемые в service.HistoryManager, сохраняют предыдущую версию задачи и её данных.
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(subTask1);

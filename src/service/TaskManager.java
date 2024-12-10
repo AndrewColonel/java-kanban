@@ -1,14 +1,22 @@
-import java.util.ArrayList;
+package service;
+
+import model.Epic;
+import model.Subtask;
+import model.Task;
+
 import java.util.List;
 
 public interface TaskManager {
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
-    ArrayList<Task> getTasksList();
 
-    ArrayList<Subtask> getSubTasksList();
+    //при объявлении методов лучше использовать интерфейсы,
+    // а не их классы реализации. Т.е. интерфейс List, а не класс ArrayList
+    List<Task> getTasksList();
 
-    ArrayList<Epic> getEpicsList();
+    List<Subtask> getSubTasksList();
+
+    List<Epic> getEpicsList();
 
     //б. Удаление всех задач
     void delTasks();
@@ -49,5 +57,5 @@ public interface TaskManager {
     void delEpicByID(int id);
 
     //Дополнительные методы - получение списка всех подзадач определённого эпика
-    ArrayList<Subtask> getSubTasksListByEpic(int epicId);
+    List<Subtask> getSubTasksListByEpic(int epicId);
 }

@@ -1,4 +1,4 @@
-// Большая задача, которая делится на подзадачи, называется эпиком. Наследует Task
+package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
 
 import java.util.ArrayList;
 
@@ -7,14 +7,14 @@ public class Epic extends Task {
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
     public Epic(String name, String description) {
-        //Параметризуем конструктор Epic полями name и description
+        //Параметризуем конструктор model.Epic полями name и description
         // статус уже в родительском конструкторе заполнится значением NEW
         super(name, description);// вызов соответствующего конструктора базового класса
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
     }
 
     public Epic(String name, int id, String description) {
-        //Параметризуем конструктор Epic полями name и description + id ля обновления
+        //Параметризуем конструктор model.Epic полями name и description + id ля обновления
         // статус уже в родительском конструкторе заполнится значением NEW
         super(name, id, description);// вызов соответствующего контсруткора базового класса
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
@@ -53,7 +53,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String result;
-        result = "Epic{" +
+        result = "model.Epic{" +
                 "name='" + getName() + '\'' +
                 ", id=" + getId() +
                 ", description='" + getDescription() + '\'';

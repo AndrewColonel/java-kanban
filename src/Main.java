@@ -1,3 +1,10 @@
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
+import service.Managers;
+import service.TaskManager;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -7,13 +14,13 @@ public class Main {
 
 
         //создаем экземпляр менеджераR
-        // InMemoryTaskManager InMemoryTaskManager = new InMemoryTaskManager();
-        //TaskManager manager = new InMemoryTaskManager();
+        // service.InMemoryTaskManager service.InMemoryTaskManager = new service.InMemoryTaskManager();
+        //service.TaskManager manager = new service.InMemoryTaskManager();
 
         // эксперимент с явным приведением типов
-        //TaskManager taskManager = Managers.getDefault();
-        //if (taskManager instanceof InMemoryTaskManager) {
-        //InMemoryTaskManager manager = (InMemoryTaskManager) taskManager;
+        //service.TaskManager taskManager = service.Managers.getDefault();
+        //if (taskManager instanceof service.InMemoryTaskManager) {
+        //service.InMemoryTaskManager manager = (service.InMemoryTaskManager) taskManager;
 
         //для выбора реализации Менеджера, использую метод утилитарного класса
         TaskManager manager = Managers.getDefault();
@@ -85,23 +92,23 @@ public class Main {
 //
 //
 //            //добавляем еще подзадачу
-//            manager.addSubTasks(new Subtask("написать и согласовать еще ТЗ2",
+//            manager.addSubTasks(new model.Subtask("написать и согласовать еще ТЗ2",
 //                    "Это подзадача для Эпика 2 - ПРОЕКТ", statusInProgress, 4));
 //
 //            //обновление и изменение статусов
-//            manager.updateTasks(new Task("написать cписок  дел", 1,
+//            manager.updateTasks(new model.Task("написать cписок  дел", 1,
 //                    "простая, обычная, задача", statusDone));
-//            manager.updateTasks(new Task("погулять с собакой еще раз", 2,
+//            manager.updateTasks(new model.Task("погулять с собакой еще раз", 2,
 //                    "простая, обычная, задача - обновлена", statusInProgress));
 //
-//            manager.updateEpic(new Epic("Новый Проект", 4, "Это задача для обновленного Эпика №2"));
+//            manager.updateEpic(new model.Epic("Новый Проект", 4, "Это задача для обновленного Эпика №2"));
 //
 //
-//            manager.updateSubTasks(new Subtask("упаковать коробки", 5,
+//            manager.updateSubTasks(new model.Subtask("упаковать коробки", 5,
 //                    "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 3));
-//            manager.updateSubTasks(new Subtask("не забыть кошку", 6,
+//            manager.updateSubTasks(new model.Subtask("не забыть кошку", 6,
 //                    "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 3));
-//            manager.updateSubTasks(new Subtask("написать и согласовать ТЗ", 7,
+//            manager.updateSubTasks(new model.Subtask("написать и согласовать ТЗ", 7,
 //                    "Это подзадача для Эпика 2 - ПРОЕКТ", statusInProgress, 4));
 //
 //
@@ -147,11 +154,11 @@ public class Main {
 //            System.out.println("-".repeat(20));
 //            System.out.println("удаляем объекты по идентификатору");
 //            System.out.println("-".repeat(20));
-//            System.out.println("Удаляем Task id 1");
+//            System.out.println("Удаляем model.Task id 1");
 //            System.out.println(manager.getTasksList());
 //            System.out.println(manager.getTaskByID(1));
 //            manager.delTaskByID(1);
-//            System.out.println("проверяем удаление Task id 1 ");
+//            System.out.println("проверяем удаление model.Task id 1 ");
 //            System.out.println(manager.getTaskByID(1));
 //            System.out.println(manager.getTasksList());
 //
@@ -169,12 +176,12 @@ public class Main {
 //            System.out.println(manager.getSubTasksList());
 //
 //            System.out.println("-".repeat(20));
-//            System.out.println("Удаляем Epic 4:");
+//            System.out.println("Удаляем model.Epic 4:");
 //            System.out.println(manager.getEpicByID(4));
 //            System.out.println("и соответственно его подзадачи:");
 //            System.out.println(manager.getSubTasksListByEpic(4));
 //            manager.delEpicByID(4);
-//            System.out.println("проверяем удаление Epic 4 и его подзадач");
+//            System.out.println("проверяем удаление model.Epic 4 и его подзадач");
 //            System.out.println(manager.getEpicByID(4));
 //            System.out.println(manager.getSubTasksListByEpic(4));
 //            System.out.println(manager.getSubTasksList());

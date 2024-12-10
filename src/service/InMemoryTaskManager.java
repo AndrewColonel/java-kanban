@@ -1,26 +1,35 @@
-// класс для объекта - менеджера, для управления всеми "задачами"
+package service;// класс для объекта - менеджера, для управления всеми "задачами"
+
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    // поля класса - коллекции HashMap для организации хранения задач всех типов - Task, SubTask, Epic
+    // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subTasks = new HashMap<>();
+    //теперь и эти хранилища можно объявить через интерфейс Map, а не класс HashMap
+
+    private Map<Integer, Task> tasks = new HashMap<>();
+    private Map<Integer, Epic> epics = new HashMap<>();
+    private Map<Integer, Subtask> subTasks = new HashMap<>();
+
     private int nextId = 1; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
-    //private List<Task> historyList = new ArrayList<>(); - перернесен в InMemoryHistoryManager
+    //private List<model.Task> historyList = new ArrayList<>(); - перернесен в service.InMemoryHistoryManager
     HistoryManager historyManager = Managers.getDefaultHistory();
 
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
     @Override
-    public ArrayList<Task> getTasksList() {
-        //Метод должен возвращать список, т.е. ArrayList типа Task
+    public List<Task> getTasksList() {
+        //Метод должен возвращать список, т.е. ArrayList типа model.Task
         ArrayList<Task> tasksList = new ArrayList<>();
         for (Integer i : tasks.keySet()) {
             tasksList.add(tasks.get(i));
@@ -29,7 +38,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getSubTasksList() {
+    public List<Subtask> getSubTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа SubTask
         ArrayList<Subtask> subTasksList = new ArrayList<>();
         for (Integer i : subTasks.keySet()) {
@@ -39,8 +48,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Epic> getEpicsList() {
-        //Метод должен возвращать список, т.е. ArrayList типа Epic
+    public List<Epic> getEpicsList() {
+        //Метод должен возвращать список, т.е. ArrayList типа model.Epic
         ArrayList<Epic> epicsList = new ArrayList<>();
         for (Integer i : epics.keySet()) {
             epicsList.add(epics.get(i));
@@ -192,7 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Дополнительные методы - получение списка всех подзадач определённого эпика
     @Override
-    public ArrayList<Subtask> getSubTasksListByEpic(int epicId) {
+    public List<Subtask> getSubTasksListByEpic(int epicId) {
         //сигнатуру метода нужно сделать такой public ArrayList<SubTask> getSubTasksList (int epicId)
         ArrayList<Subtask> subTaskList = new ArrayList<>();
         if (epics.containsKey(epicId)) {

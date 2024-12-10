@@ -1,3 +1,7 @@
+package service;
+
+import model.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +16,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     //истории просмотров задач
     @Override
     public List<Task> getHistory() {
-        return historyList;
+        //чтобы не открывать доступ к private переменной, можно historyList обернуть в new ArrayList<>()
+        return new ArrayList<>(historyList);
     }
-
 
     @Override
     public void add(Task task) {

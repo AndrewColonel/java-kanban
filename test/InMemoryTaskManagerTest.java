@@ -1,10 +1,18 @@
 //убедитесь, что утилитарный класс всегда возвращает проинициализированные и готовые к работе экземпляры менеджеров;
-//проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
+//проверьте, что service.InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
 //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера;
 //создайте тест, в котором проверяется неизменность задачи (по всем полям) при добавлении задачи в менеджер
 
 
+import model.Epic;
+import model.Subtask;
+import model.Task;
+import model.TaskStatus;
 import org.junit.jupiter.api.*;
+import service.HistoryManager;
+import service.Managers;
+import service.TaskManager;
+
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
@@ -60,12 +68,12 @@ class InMemoryTaskManagerTest {
             manager.getTaskByID(task.getId());
         }
         assertNotNull(historyManager.getHistory(), "История задач не получена");
-        //метод экзепляра класса типа HistoryManager рабюотает и возвращает непустой список
+        //метод экзепляра класса типа service.HistoryManager рабюотает и возвращает непустой список
     }
 
     @Test
     void InMemoryTaskManagerAddTasksFindByID() {
-        //проверяем, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
+        //проверяем, что service.InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
         manager.addTasks(task1);
         manager.addEpic(epic1);
         manager.addSubTasks(subTask1);

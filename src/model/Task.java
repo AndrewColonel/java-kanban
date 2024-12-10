@@ -1,4 +1,4 @@
-//Публичный не абстрактный базовый класс Task, который представляет "простую" задачу.
+package model;//Публичный не абстрактный базовый класс model.Task, который представляет "простую" задачу.
 // Базовый класс для подзадач и эпика.
 
 import java.util.Objects;
@@ -79,7 +79,7 @@ public class Task {
     //классе отдельно
     @Override
     public String toString() {
-        return "Task{" +
+        return "model.Task{" +
                 "name='" + name + '\'' +
                 ", id=" + id +
                 ", description='" + description + '\'' +
