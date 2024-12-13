@@ -36,18 +36,18 @@ public interface TaskManager {
     Epic getEpicByID(int id);
 
     // d. Создание задачи. Объект передается в качестве параметра.
-    void addTasks(Task task);
+    void add(Task task);
 
-    void addSubTasks(Subtask subtask);
+    void add(Subtask subtask);
 
-    void addEpic(Epic epic);
+    void add(Epic epic);
 
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
-    void updateTasks(Task task);
+    void update(Task task);
 
-    void updateSubTasks(Subtask subtask);
+    void update(Subtask subtask);
 
-    void updateEpic(Epic epic);
+    void update(Epic epic);
 
     //f. Удаление по идентификатору.
     void delTaskByID(int id);

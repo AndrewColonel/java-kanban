@@ -20,6 +20,10 @@ public class Subtask extends Task {
         return epicID;
     }
 
+    public void setEpicID(int epicID) {
+        this.epicID = epicID;
+    }
+
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override

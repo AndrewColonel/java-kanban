@@ -26,19 +26,19 @@ public class Main {
         TaskManager manager = Managers.getDefault();
 
         //Создание задач, эпиков и подзадач. Объекта передается в качестве параметра
-        manager.addTasks(new Task("написать cписок дел",
+        manager.add(new Task("написать cписок дел",
                 "простая, обычная, задача", statusNew));
-        manager.addTasks(new Task("погулять с собакой еще раз",
+        manager.add(new Task("погулять с собакой еще раз",
                 "простая, обычная, задача - обновлена", statusNew));
 
-        manager.addEpic(new Epic("Переезд", "Это задача -Эпик №1"));
-        manager.addEpic(new Epic("Проект", "Это задача -Эпик №2"));
+        manager.add(new Epic("Переезд", "Это задача -Эпик №1"));
+        manager.add(new Epic("Проект", "Это задача -Эпик №2"));
 
-        manager.addSubTasks(new Subtask("упаковать коробки",
+        manager.add(new Subtask("упаковать коробки",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusNew, 3));
-        manager.addSubTasks(new Subtask("не забыть кошку",
+        manager.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
-        manager.addSubTasks(new Subtask("написать и согласовать ТЗ", 0,
+        manager.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew, 4));
 
 
