@@ -1,7 +1,6 @@
 package model;//Публичный не абстрактный базовый класс model.Task, который представляет "простую" задачу.
 // Базовый класс для подзадач и эпика.
 import java.util.Objects;
-
 public class Task {
     // поля базового класса
     private String name;

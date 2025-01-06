@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
-
     static TaskStatus statusNew;
     static TaskStatus statusInProgress;
     static TaskStatus statusDone;

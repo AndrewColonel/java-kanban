@@ -19,6 +19,12 @@ public class Epic extends Task {
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
     }
 
+    public Epic(Epic epic) {
+        //еще один конструктор для обертки эпиков
+        super(epic.getName(), epic.getId(), epic.getDescription(),epic.getStatus());
+        subTasksIDs = epic.getSubTasksIDs();
+    }
+
     // для всех атрибутов класса нужны геттеры и сеттеры
     public ArrayList<Integer> getSubTasksIDs() {
         //чтобы не открывать доступ к private переменной, можно subTasksIDs обернуть в new ArrayList<>()

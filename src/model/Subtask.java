@@ -1,4 +1,5 @@
 package model;// класс описывающий подзадачу, наследует базовый класс model.Task
+
 public class Subtask extends Task {
     private int epicID;
 
@@ -16,6 +17,10 @@ public class Subtask extends Task {
 
     public int getEpicID() {
         return epicID;
+    }
+
+    public void setEpicID(int epicID) {
+        this.epicID = epicID;
     }
 
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом

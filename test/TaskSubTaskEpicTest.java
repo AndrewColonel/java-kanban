@@ -10,7 +10,6 @@ import model.TaskStatus;
 import org.junit.jupiter.api.*;
 import service.Managers;
 import service.TaskManager;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskSubTaskEpicTest {
@@ -89,7 +88,7 @@ class TaskSubTaskEpicTest {
         // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
         int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
         subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
-        manager.addSubTasks(subTask1);//добавляем Подзадачу через менеджер в общее хранилище подзадач
+        manager.add(subTask1);//добавляем Подзадачу через менеджер в общее хранилище подзадач
         Subtask subtask = manager.getSubTaskByID(epicID);
         //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
         // его id должен быть изменен в менеджере и только потом записан в общее хранилище подзадач

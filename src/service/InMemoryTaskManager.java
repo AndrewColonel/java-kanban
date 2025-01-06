@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
@@ -111,13 +110,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     // d. Создание задачи. Объект передается в качестве параметра.
     @Override
-    public void addTasks(Task task) {
+    public void add(Task task) {
         task.setId(nextId++);
         tasks.put(task.getId(), task);
     }
 
     @Override
-    public void addSubTasks(Subtask subtask) {
+    public void add(Subtask subtask) {
         if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи эпик нашелся
             subtask.setId(nextId++); // то подзадача получает id
             subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
@@ -128,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addEpic(Epic epic) {
+    public void add(Epic epic) {
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
     }
@@ -136,7 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     @Override
-    public void updateTasks(Task task) {
+    public void update(Task task) {
         // обновляется только та задача, которая ранее была в tasks
         if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
@@ -144,7 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTasks(Subtask subtask) {
+    public void update(Subtask subtask) {
         // проверяем есть ли такая подзадача, не существующую подзадачу не обновляем
         if (subTasks.containsKey(subtask.getId())) {
             Subtask updatedSubTask = subTasks.get(subtask.getId());
@@ -157,16 +156,31 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+//    @Override
+//    public void update(Epic epic) {
+//        //Метод может обновить всего два поля: name и description.
+//        // Поэтому нужно вручную переложить значения этих полей в Эпик
+//        if (epics.containsKey(epic.getId())) { //обновляем только существующий эпик
+//            Epic updatedEpic = epics.get(epic.getId());
+//            updatedEpic.setName(epic.getName());
+//            updatedEpic.setDescription(epic.getDescription());
+//        }
+//    }
+
     @Override
-    public void updateEpic(Epic epic) {
-        //Метод может обновить всего два поля: name и description.
-        // Поэтому нужно вручную переложить значения этих полей в Эпик
+    public void update(Epic epic) {
+        //Метод может обновить всего два поля: name и description, при этом эпик остается прежним,
+        // в отличии от задач и подзадач
+        // Поэтому можно выполнить обертку эпика и замену его в списке-хранилище
         if (epics.containsKey(epic.getId())) { //обновляем только существующий эпик
             Epic updatedEpic = epics.get(epic.getId());
-            updatedEpic.setName(epic.getName());
-            updatedEpic.setDescription(epic.getDescription());
+            Epic newEpic = new Epic(updatedEpic); //оборачиваем полученный эпик
+            newEpic.setName(epic.getName());
+            newEpic.setDescription(epic.getDescription());
+            epics.put(epic.getId(), newEpic); //полностью новый эпик в хранилище
         }
     }
+
 
     //f. Удаление по идентификатору.
     @Override
