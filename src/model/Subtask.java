@@ -1,5 +1,4 @@
 package model;// класс описывающий подзадачу, наследует базовый класс model.Task
-
 public class Subtask extends Task {
     private int epicID;
 
@@ -9,7 +8,6 @@ public class Subtask extends Task {
         this.epicID = epicID;
     }
 
-
     public Subtask(String name, int id, String description, TaskStatus status, int epicID) {
         //Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
         super(name, id, description, status);
@@ -18,10 +16,6 @@ public class Subtask extends Task {
 
     public int getEpicID() {
         return epicID;
-    }
-
-    public void setEpicID(int epicID) {
-        this.epicID = epicID;
     }
 
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом

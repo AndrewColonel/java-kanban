@@ -1,5 +1,4 @@
 package service;
-
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -36,18 +35,18 @@ public interface TaskManager {
     Epic getEpicByID(int id);
 
     // d. Создание задачи. Объект передается в качестве параметра.
-    void add(Task task);
+    void addTasks(Task task);
 
-    void add(Subtask subtask);
+    void addSubTasks(Subtask subtask);
 
-    void add(Epic epic);
+    void addEpic(Epic epic);
 
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
-    void update(Task task);
+    void updateTasks(Task task);
 
-    void update(Subtask subtask);
+    void updateSubTasks(Subtask subtask);
 
-    void update(Epic epic);
+    void updateEpic(Epic epic);
 
     //f. Удаление по идентификатору.
     void delTaskByID(int id);

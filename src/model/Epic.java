@@ -1,5 +1,4 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
-
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -18,12 +17,6 @@ public class Epic extends Task {
         // статус уже в родительском конструкторе заполнится значением NEW
         super(name, id, description);// вызов соответствующего контсруткора базового класса
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
-    }
-
-    public Epic(Epic epic) {
-        //еще один конструктор для обертки эпиков
-        super(epic.getName(), epic.getId(), epic.getDescription(),epic.getStatus());
-        subTasksIDs = epic.getSubTasksIDs();
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры
