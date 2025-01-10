@@ -1,5 +1,7 @@
 package service;
 
+import model.Task;
+
 public class Managers {
 
     public  static TaskManager getDefault() {
