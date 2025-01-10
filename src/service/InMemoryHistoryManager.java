@@ -51,6 +51,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+
     public void listFirst(Task task) {
         // добавляем задачу в начало (в головной элемент) двусвязного списка
         final Node<Task> oldHead = head;
