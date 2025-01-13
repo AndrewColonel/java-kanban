@@ -111,17 +111,20 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void add(Task task) {
+    public void add(Task task) {//ищем и удаляем дубликат
         if (historyMap.containsKey(task.getId())) {
             removeNode(historyMap.get(task.getId()));
+            historyMap.remove(task.getId());
         }
-        listLast(task);
+        listLast(task); //добавляем задачу в конец списка
     }
 
     @Override
-    public void remove(int id) {
-        //TODO реализовать метод remove
-
+    public void remove(int id) {//ищем и удаляем лог истории задачи
+        if (historyMap.containsKey(id)) {
+            removeNode(historyMap.get(id));
+            historyMap.remove(id);
+        }
     }
 
     //истории просмотров задач
