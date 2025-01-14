@@ -13,16 +13,24 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
+
     //теперь и эти хранилища можно объявить через интерфейс Map, а не класс HashMap
+    private Map<Integer, Task> tasks;
+    private Map<Integer, Epic> epics;
+    private Map<Integer, Subtask> subTasks;
 
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
-    private Map<Integer, Subtask> subTasks = new HashMap<>();
-
-    private int nextId = 1; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
+    private int nextId; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
     //private List<model.Task> historyList = new ArrayList<>(); - перернесен в service.InMemoryHistoryManager
-    HistoryManager historyManager = Managers.getDefaultHistory();
+    HistoryManager historyManager;
 
+
+    public InMemoryTaskManager() {
+        this.tasks = new HashMap<>();
+        this.epics = new HashMap<>();
+        this.subTasks = new HashMap<>();
+        this.nextId = 1;
+        this.historyManager = Managers.getDefaultHistory();
+    }
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
@@ -132,7 +140,6 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
     }
 
-
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     @Override
     public void update(Task task) {
@@ -169,7 +176,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void update(Epic epic) {
-        //Метод может обновить всего два поля: name и description, при этом эпик остается прежним,
+        //Метод может обновить всего два поля: name и description, при этом эпик остается прежним, как объект в памяти,
         // в отличии от задач и подзадач
         // Поэтому можно выполнить обертку эпика и замену его в списке-хранилище
         if (epics.containsKey(epic.getId())) { //обновляем только существующий эпик

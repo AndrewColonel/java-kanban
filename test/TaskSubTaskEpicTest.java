@@ -3,13 +3,11 @@
 //проверьте, что объект model.Subtask нельзя сделать своим же эпиком;
 //проверьте, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import model.TaskStatus;
+import model.*;
 import org.junit.jupiter.api.*;
 import service.Managers;
 import service.TaskManager;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskSubTaskEpicTest {
@@ -96,12 +94,23 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicShouldNOTBeAddedLikeEpic() { //проверяем, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
+    void epicShouldNOTBeAddedLikeEpic() {
+        //проверяем, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
         // по условиям ТЗ4 - Каждый эпик знает, какие подзадачи в него входят.
         //добавить model.Epic сам в себя в виде подзадачи, это добавить его id в хранилище subTasksIDs
         int epicID = epic1.getId(); //получаем id Эпика
         epic1.addSubTaskID(epicID); // передаем его в хранилище subTasksIDs и пытаемся получить обратно
         assertFalse(epic1.getSubTasksIDs().contains(epicID), "Задача найдена!");
+    }
+
+    @Test
+    void nodeShouldBeEqualswithSameTask() {
+        //проверяем корректность операции сравнения двух узлов связного списка
+        Node<Task> nodeTask1 = new Node<>(task1);
+        Node<Task> nodeTask2 = new Node<>(task1);
+        Node<Task> nodeSubTask1 = new Node<>(subTask1);
+        assertEquals(nodeTask1, nodeTask2, "Узлы не совпадают");
+        assertNotEquals(nodeTask1, nodeSubTask1, "Узлы совпадают");
     }
 
 }

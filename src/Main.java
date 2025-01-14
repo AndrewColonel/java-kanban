@@ -51,8 +51,8 @@ public class Main {
         for (Task task : manager.getTasksList()) {
 //            System.out.println(task);
             System.out.println(manager.getTaskByID(task.getId()));
-
         }
+
         System.out.println("Эпики:");
         for (Task epic : manager.getEpicsList()) {
 //            System.out.println(epic);
@@ -62,6 +62,7 @@ public class Main {
                 System.out.println("--> " + task);
             }
         }
+
         System.out.println("Подзадачи:");
         for (Task subtask : manager.getSubTasksList()) {
 //            System.out.println(subtask);
@@ -73,7 +74,6 @@ public class Main {
             System.out.println(task);
         }
     }
-
 }
 
 

@@ -48,11 +48,11 @@ class InMemoryTaskManagerTest {
         epic2 = new Epic("Тест создания Эпик 2", 1, "Это задача -Эпик 2");
 
         subTask1 = new Subtask("Тест создания Подзадачи 1",
-                "Это подзадача для Эпика", statusNew, 1);
+                "Это подзадача для Эпика", statusNew, 3);
         subTask2 = new Subtask("Тест создания Подзадачи 2",
-                "Это подзадача для Эпика", statusNew, 1);
+                "Это подзадача для Эпика", statusNew, 3);
         subTask3 = new Subtask("Тест создания Подзадачи 3", 0,
-                "Это подзадача для Эпика", statusNew, 1);
+                "Это подзадача для Эпика", statusNew, 4);
 
     }
 
@@ -63,12 +63,15 @@ class InMemoryTaskManagerTest {
         assertNotNull(historyManager, "Менеджер не создан");//возвращает проинициализированныq экземпляр
         manager.add(task1);
         manager.add(task2);
-        assertNotNull(manager.getTasksList(), "Список задач не получен");//методы экзепляра рабюотают
-        for (Task task : manager.getTasksList()) {//наполняем спсико истории
+        assertNotNull(manager.getTasksList(), "Список задач не получен");//методы экзепляра работают
+
+        for (Task task : manager.getTasksList()) {//наполняем спсиок истории
             manager.getTaskByID(task.getId());
         }
-        assertNotNull(historyManager.getHistory(), "История задач не получена");
-        //метод экзепляра класса типа service.HistoryManager рабюотает и возвращает непустой список
+        assertNull(historyManager.getHistory(), "История задач  получена");
+        //прямой вызов метода возвращает NULL
+        assertNotNull(manager.getHistory(), "История задач не  получена");
+        //метод экзепляра класса типа service.HistoryManager, рабюотает и возвращает непустой список
     }
 
     @Test
@@ -165,7 +168,4 @@ class InMemoryTaskManagerTest {
         assertEquals(epic.getSubTasksIDs(), epicNew.getSubTasksIDs(), "списки не совпадают");
         assertEquals(epic.getStatus(), epicNew.getStatus(), "статусы не совпали");
     }
-
-
-
 }

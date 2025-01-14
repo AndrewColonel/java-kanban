@@ -28,7 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         this.size = 0;
     }
 
-    public void listLast(Task task) {
+    private void listLast(Task task) {
         //добавляем задачу в конец (в хвост)  двусвязного списка
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
@@ -42,16 +42,27 @@ public class InMemoryHistoryManager implements HistoryManager {
         historyMap.put(task.getId(), newNode);
     }
 
-    public void getTasks() {//собираем в ArrayList
+//    public void getTasks() {//собираем в ArrayList
+//        Node<Task> curNode = head;
+//        if (curNode == null) return;
+//        for (int i = 0; i < size; i++) {
+//            historyList.add(curNode.data);
+//            curNode = curNode.next;
+//        }
+//    }
+
+    private List<Task> getTasks() {//собираем в ArrayList
+        //другой вариант метода getTask()
         Node<Task> curNode = head;
-        if (curNode == null) return;
+        if (curNode == null) return null;
         for (int i = 0; i < size; i++) {
             historyList.add(curNode.data);
             curNode = curNode.next;
         }
+        return new ArrayList<>(historyList);
     }
 
-    public void removeNode(Node<Task> node) {//удааляем узел из списка
+    private void removeNode(Node<Task> node) {//удааляем узел из списка
         //необходимо учесть все варианты где находится данный узел - внутри списка, голова или хвост
         //а также восстановить все ссылки на предыдущий и последующие элементы
         if (node != null) { //если null удалять нечего
@@ -70,13 +81,13 @@ public class InMemoryHistoryManager implements HistoryManager {
                 Node<Task> nextNode = node.next;
                 prevNode.next = nextNode;
                 nextNode.prev = prevNode;
-                node = null;
+                node.data = null;
             }
             size--;
         }
     }
 
-    public void listFirst(Task task) {
+    private void listFirst(Task task) {
         //добавляем задачу в начало (в головной элемент) двусвязного списка
         final Node<Task> oldHead = head;
         final Node<Task> newNode = new Node<>(null, task, oldHead);
@@ -89,7 +100,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         size++;
     }
 
-    public Task getFirst() {
+    private Task getFirst() {
         //метод реализует доступ к первому (головному) элементу двусвязного списка
         final Node<Task> curHead = head;
         if (curHead == null)
@@ -97,7 +108,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return head.data;
     }
 
-    public Task getLast() {
+    private Task getLast() {
         //метод реализует доступ к последнему (хвостовому) элементу двусвязного списка
         final Node<Task> curTail = tail;
         if (curTail == null)
@@ -105,14 +116,16 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tail.data;
     }
 
-    public int size() {
+    private int size() {
         //метод возвращает размер списка
         return this.size;
     }
 
     @Override
-    public void add(Task task) {//ищем и удаляем дубликат
-        if (historyMap.containsKey(task.getId())) {
+    public void add(Task task) {
+        if (task == null) return;
+        //проверка на равенство null добавлено в результате сбоя теста subTaskShouldNOTBeEpic() в TaskSubTaskEpicTest
+        if (historyMap.containsKey(task.getId())) {//ищем и удаляем дубликат из списка и из HashMAp
             removeNode(historyMap.get(task.getId()));
             historyMap.remove(task.getId());
         }
@@ -120,7 +133,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id) {//ищем и удаляем лог истории задачи
+    public void remove(int id) {//ищем и удаляем задачу из списка и из HashMAp
         if (historyMap.containsKey(id)) {
             removeNode(historyMap.get(id));
             historyMap.remove(id);
@@ -131,7 +144,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         //чтобы не открывать доступ к private переменной, можно historyList обернуть в new ArrayList<>()
-        getTasks();
-        return new ArrayList<>(historyList);
+//        getTasks(); //для реализации варианта void метода
+//        return new ArrayList<>(historyList); //для реализации варианта void метода
+        return getTasks();
+
     }
 }
