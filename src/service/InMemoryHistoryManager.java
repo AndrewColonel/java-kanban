@@ -1,8 +1,6 @@
 package service;
-
 import model.Node;
 import model.Task;
-
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -42,23 +40,16 @@ public class InMemoryHistoryManager implements HistoryManager {
         historyMap.put(task.getId(), newNode);
     }
 
-//    public void getTasks() {//собираем в ArrayList
-//        Node<Task> curNode = head;
-//        if (curNode == null) return;
-//        for (int i = 0; i < size; i++) {
-//            historyList.add(curNode.data);
-//            curNode = curNode.next;
-//        }
-//    }
-
     private List<Task> getTasks() {//собираем в ArrayList
-        //другой вариант метода getTask()
+        historyList.clear();
         Node<Task> curNode = head;
-        if (curNode == null) return null;
-        for (int i = 0; i < size; i++) {
-            historyList.add(curNode.data);
-            curNode = curNode.next;
+        if (curNode != null) {
+            for (int i = 0; i < size; i++) {
+                historyList.add(curNode.data);
+                curNode = curNode.next;
+            }
         }
+        //чтобы не открывать доступ к private переменной, можно historyList обернуть в new ArrayList<>()
         return new ArrayList<>(historyList);
     }
 
@@ -68,8 +59,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (node != null) { //если null удалять нечего
             if (node == head) { //удаляем голову
                 final Node<Task> newHead = node.next;
-                head = newHead;
-                newHead.prev = null;
+                if (newHead != null) {//если данный элемент не был последним
+                    head = newHead;
+                    newHead.prev = null;
+                }
 
             } else if (node == tail) { //удаляем хвост
                 final Node<Task> newTail = node.prev;
@@ -85,40 +78,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
             size--;
         }
-    }
-
-    private void listFirst(Task task) {
-        //добавляем задачу в начало (в головной элемент) двусвязного списка
-        final Node<Task> oldHead = head;
-        final Node<Task> newNode = new Node<>(null, task, oldHead);
-        head = newNode; //создали м перезаписали новую голову
-        if (oldHead == null) {//если раньше головы не было, то хвост надо тоже создать
-            tail = newNode;
-        } else {//если голова была, обновляем ссылку на новуюь голову
-            oldHead.prev = newNode;
-        }
-        size++;
-    }
-
-    private Task getFirst() {
-        //метод реализует доступ к первому (головному) элементу двусвязного списка
-        final Node<Task> curHead = head;
-        if (curHead == null)
-            throw new NoSuchElementException();
-        return head.data;
-    }
-
-    private Task getLast() {
-        //метод реализует доступ к последнему (хвостовому) элементу двусвязного списка
-        final Node<Task> curTail = tail;
-        if (curTail == null)
-            throw new NoSuchElementException();
-        return tail.data;
-    }
-
-    private int size() {
-        //метод возвращает размер списка
-        return this.size;
     }
 
     @Override
@@ -143,9 +102,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     //истории просмотров задач
     @Override
     public List<Task> getHistory() {
-        //чтобы не открывать доступ к private переменной, можно historyList обернуть в new ArrayList<>()
-//        getTasks(); //для реализации варианта void метода
-//        return new ArrayList<>(historyList); //для реализации варианта void метода
         return getTasks();
 
     }

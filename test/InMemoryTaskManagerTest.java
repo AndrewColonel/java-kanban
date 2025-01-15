@@ -68,7 +68,7 @@ class InMemoryTaskManagerTest {
         for (Task task : manager.getTasksList()) {//наполняем спсиок истории
             manager.getTaskByID(task.getId());
         }
-        assertNull(historyManager.getHistory(), "История задач  получена");
+        assertNotNull(historyManager.getHistory(), "История задач NULL");
         //прямой вызов метода возвращает NULL
         assertNotNull(manager.getHistory(), "История задач не  получена");
         //метод экзепляра класса типа service.HistoryManager, рабюотает и возвращает непустой список
@@ -168,4 +168,31 @@ class InMemoryTaskManagerTest {
         assertEquals(epic.getSubTasksIDs(), epicNew.getSubTasksIDs(), "списки не совпадают");
         assertEquals(epic.getStatus(), epicNew.getStatus(), "статусы не совпали");
     }
+
+
+    @Test
+    void delTasksTest() {
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(epic1);
+        manager.add(epic2);
+        manager.add(subTask1);
+        manager.add(subTask2);
+        manager.add(subTask3);
+
+        //удаляем задачи и проверяем пустые списки в соответсвии с заданой логикой
+        manager.delTasks();
+        assertTrue(manager.getTasksList().isEmpty(), "Список Tasks не пуст");
+        manager.delSubTasks();
+        assertTrue(manager.getSubTasksList().isEmpty(), "Список SubTasks не пуст");
+        assertFalse(manager.getEpicsList().isEmpty(), "Список Epics пуст после удаления SubTasks");
+        manager.add(subTask1);
+        manager.add(subTask2);
+        manager.add(subTask3);
+        assertFalse(manager.getSubTasksList().isEmpty(), "Список SubTasks пуст");
+        manager.delEpics();
+        assertTrue(manager.getSubTasksList().isEmpty(), "Список SubTasks не пуст");
+        assertTrue(manager.getEpicsList().isEmpty(), "Список Epics не пуст");
+    }
+
 }

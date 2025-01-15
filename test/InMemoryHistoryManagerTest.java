@@ -1,18 +1,17 @@
 //Проверьте, что встроенный связный список версий,
 // а также операции добавления и удаления работают корректно.
 
-import java.util.List;
 
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 import org.junit.jupiter.api.*;
-import service.HistoryManager;
 import service.Managers;
 import service.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 class InMemoryHistoryManagerTest {
 
@@ -20,7 +19,6 @@ class InMemoryHistoryManagerTest {
     static TaskStatus statusInProgress;
     static TaskStatus statusDone;
     static TaskManager manager;
-    static HistoryManager historyManager;
     static Task task1;
     static Task task2;
     static Epic epic1;
@@ -35,7 +33,6 @@ class InMemoryHistoryManagerTest {
         statusInProgress = TaskStatus.IN_PROGRESS;
         statusDone = TaskStatus.DONE;
         manager = Managers.getDefault();
-//        historyManager = Managers.getDefaultHistory();
 
         task1 = new Task("Тест создания Таск 1",
                 "описание Таск 1", statusNew);
@@ -59,6 +56,13 @@ class InMemoryHistoryManagerTest {
         manager.add(subTask1);
         manager.add(subTask2);
         manager.add(subTask3);
+    }
+
+    @Test
+    void addGetHistoryTest() {
+        //тест реализации методов ведения журнала истории
+        // при использовании соответсвующих методов add, delByID getByID для задач из TaskManager
+
         for (Task task : manager.getTasksList()) {
             manager.getTaskByID(task.getId());
         }
@@ -72,34 +76,49 @@ class InMemoryHistoryManagerTest {
             manager.getSubTaskByID(subtask.getId());
         }
 
-    }
-
-    @Test
-    void addHistoryCheck() {
         //список истории доступа к задачам по ID не пустой
-        assertNotNull(manager.getHistory(), "Журнал истории пуст");
+        assertNotNull(manager.getHistory(), "Журнал истории не NULL");
+        assertFalse(manager.getHistory().isEmpty(), "Журнал истории пуст");
         Task curTask = null;
         for (Task task : manager.getHistory()) {
             //элементы списка не NULL и не равны друг другу (уникальны)
             assertNotEquals(curTask, task, "Записи равны");
             curTask = task;
         }
+    }
 
+    @Test
+    void RemoveGetHistoryTest() {
+        //тест реализации методов ведения журнала истории
+        // при использовании соответсвующих методов add, delByID getByID для задач из TaskManager
 
-//        final List<Task> history = manager.getHistory();
-//
-//        Task taskFromHistoryLast = history.get(2);
-//        Task taskFromHistoryMiddle = history.get(1);
-//        Task taskFromHistoryFirst = history.get(0);
-//
-//        assertEquals(subTask1, taskFromHistoryLast, "Задачи не совпали");
-//        assertEquals(task2, taskFromHistoryMiddle, "Задачи не совпали");
-//        assertEquals(task1, taskFromHistoryFirst, "Задачи не совпали");
+        //удаляем задачи и эпики, журнал истории должен быть пуст
+        for (Task task : manager.getTasksList()) {
+            manager.delTaskByID(task.getId());
+        }
+        for (Task epic : manager.getEpicsList()) {
+            manager.delEpicByID(epic.getId());
+        }
+        assertNotNull(manager.getHistory(), "Журнал истории  NULL");
+        assertTrue(manager.getHistory().isEmpty(), "Журнал истории не пуст");
+    }
 
-//        assertNotNull(history, "История  пустая.");
-//        assertEquals(3, history.size(), "История  пустая.");
+    @Test
+    void firstLastElementTest() {
+        //тестирования порядка добавления истоии задач в списко
 
+        for (Task epic : manager.getEpicsList()) {
+            manager.getEpicByID(epic.getId());
+            for (Task subtask : manager.getSubTasksListByEpic(epic.getId())) {
+                manager.getSubTaskByID(subtask.getId());
+            }
+        }
+        assertEquals(manager.getEpicsList().getFirst(),
+                manager.getHistory().getFirst(), "Элементы не равны");
+        assertEquals(manager.getSubTasksList().getLast(),
+                manager.getHistory().getLast(), "Элементы не равны");
 
     }
+
 
 }

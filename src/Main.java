@@ -58,16 +58,44 @@ public class Main {
 //            System.out.println(epic);
             System.out.println(manager.getEpicByID(epic.getId()));
 
-            for (Task task : manager.getSubTasksListByEpic(epic.getId())) {
-                System.out.println("--> " + task);
+            for (Task subtask : manager.getSubTasksListByEpic(epic.getId())) {
+                System.out.println("--> " + subtask);
+                manager.getSubTaskByID(subtask.getId());
+
             }
         }
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
 
-        System.out.println("Подзадачи:");
+        System.out.println();
+        System.out.println("-".repeat(20));
+        System.out.println();
+
+        System.out.println("Еще Подзадачи:");
         for (Task subtask : manager.getSubTasksList()) {
 //            System.out.println(subtask);
             System.out.println(manager.getSubTaskByID(subtask.getId()));
         }
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        System.out.println();
+        System.out.println("-".repeat(20));
+        System.out.println();
+
+        System.out.println("Удаляем задачи и Эпик:");
+        System.out.println(manager.getTaskByID(1));
+        manager.delTaskByID(1);
+        System.out.println(manager.getTaskByID(2));
+        manager.delTaskByID(2);
+        System.out.println(manager.getEpicByID(3));
+        manager.delEpicByID(3);
+
 
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
