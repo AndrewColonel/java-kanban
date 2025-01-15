@@ -1,4 +1,5 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -21,7 +22,7 @@ public class Epic extends Task {
 
     public Epic(Epic epic) {
         //еще один конструктор для обертки эпиков
-        super(epic.getName(), epic.getId(), epic.getDescription(),epic.getStatus());
+        super(epic.getName(), epic.getId(), epic.getDescription(), epic.getStatus());
         subTasksIDs = epic.getSubTasksIDs();
     }
 
@@ -46,7 +47,7 @@ public class Epic extends Task {
 
     // 3) добавит единичную подзадачу в хранилище subTasksIDs
     public void addSubTaskID(Integer id) {
-        if (!subTasksIDs.contains(id) && id!=this.getId()) {
+        if (!subTasksIDs.contains(id) && (id != this.getId())) {
             //добавлена условие для коррекции ошибки - совпадения id эпика и подзадачи
             //чтобы эпик нельзя было добавить в себя же как подзадачу
             subTasksIDs.add(id);
