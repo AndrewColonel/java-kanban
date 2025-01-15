@@ -12,7 +12,6 @@ import service.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class InMemoryHistoryManagerTest {
 
     static TaskStatus statusNew;
@@ -119,6 +118,4 @@ class InMemoryHistoryManagerTest {
                 manager.getHistory().getLast(), "Элементы не равны");
 
     }
-
-
 }

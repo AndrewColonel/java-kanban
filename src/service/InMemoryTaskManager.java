@@ -76,7 +76,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer i : epics.keySet()) {
             Epic epic = epics.get(i);
             epic.delAllSubTasksIDs(); //также очищает внутренние хранилища всех эпиков
-            calculateEpicStatus(epic);//и выставляет статус очищенных эпиков в NEW
+            calculateEpicStatus(epic); //и выставляет статус очищенных эпиков в NEW
         }
         subTasks.clear();
     }
@@ -85,7 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void delEpics() {
         //метод удаления всех эпиков,
         epics.clear();
-        subTasks.clear();//удаляет все подзадачи, они сами по себе не существуют
+        subTasks.clear(); //удаляет все подзадачи, они сами по себе не существуют
     }
 
     //истории просмотров задач
@@ -216,11 +216,11 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(id);
             for (Integer subTasksID : epic.getSubTasksIDs()) {
                 subTasks.remove(subTasksID);
-                historyManager.remove(subTasksID);//удаляем задачу из истории
+                historyManager.remove(subTasksID); //удаляем задачу из истории
             }
         }
         epics.remove(id);
-        historyManager.remove(id);//удаляем задачу из истории
+        historyManager.remove(id); //удаляем задачу из истории
     }
 
     //Дополнительные методы - получение списка всех подзадач определённого эпика

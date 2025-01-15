@@ -40,9 +40,7 @@ public class Main {
         manager.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew, 4));
 
-
         printAllTasks(manager);
-
 
     }
 

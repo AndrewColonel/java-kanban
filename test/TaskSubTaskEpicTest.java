@@ -60,7 +60,8 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicsShouldBeEqualsByID() { //проверяем, что наследники класса model.Task - model.Epic равны друг другу, если равен их id;
+    void epicsShouldBeEqualsByID() {
+        //проверяем, что наследники класса model.Task - model.Epic равны друг другу, если равен их id;
         final int epicID = 1;
         epic1.setId(epicID);
         epic2.setId(epicID);
@@ -70,7 +71,8 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void subTaskShouldBeEqualsByID() { //проверьте, что наследники класса model.Task - SubTask равны, если равен их id;
+    void subTaskShouldBeEqualsByID() {
+        //проверьте, что наследники класса model.Task - SubTask равны, если равен их id;
         final int subTaskID = 1;
         subTask1.setId(subTaskID);
         subTask2.setId(subTaskID);
@@ -86,7 +88,7 @@ class TaskSubTaskEpicTest {
         // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
         int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
         subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
-        manager.add(subTask1);//добавляем Подзадачу через менеджер в общее хранилище подзадач
+        manager.add(subTask1); //добавляем Подзадачу через менеджер в общее хранилище подзадач
         Subtask subtask = manager.getSubTaskByID(epicID);
         //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
         // его id должен быть изменен в менеджере и только потом записан в общее хранилище подзадач
@@ -112,5 +114,4 @@ class TaskSubTaskEpicTest {
         assertEquals(nodeTask1, nodeTask2, "Узлы не совпадают");
         assertNotEquals(nodeTask1, nodeSubTask1, "Узлы совпадают");
     }
-
 }

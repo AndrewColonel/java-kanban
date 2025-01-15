@@ -60,12 +60,12 @@ class InMemoryTaskManagerTest {
     void utilityClassMakeObjects() {
         //утилитарный класс всегда возвращает проинициализированные и готовые к работе экземпляры менеджеров
         assertNotNull(manager, "Менеджер не создан"); //возвращает проинициализированныq экземпляр
-        assertNotNull(historyManager, "Менеджер не создан");//возвращает проинициализированныq экземпляр
+        assertNotNull(historyManager, "Менеджер не создан"); //возвращает проинициализированныq экземпляр
         manager.add(task1);
         manager.add(task2);
-        assertNotNull(manager.getTasksList(), "Список задач не получен");//методы экзепляра работают
+        assertNotNull(manager.getTasksList(), "Список задач не получен"); //методы экзепляра работают
 
-        for (Task task : manager.getTasksList()) {//наполняем спсиок истории
+        for (Task task : manager.getTasksList()) { //наполняем спсиок истории
             manager.getTaskByID(task.getId());
         }
         assertNotNull(historyManager.getHistory(), "История задач NULL");
@@ -129,7 +129,7 @@ class InMemoryTaskManagerTest {
         manager.add(epic1);
         Epic epic = manager.getEpicsList().getFirst(); //достаем первый эпик
 
-        subTask1.setEpicID(epic.getId());//получаем его id и передаем его в подзадачу
+        subTask1.setEpicID(epic.getId()); //получаем его id и передаем его в подзадачу
         manager.add(subTask1); //добавляем в ввыбранный эпик подзадачу
 
         Subtask subtask = manager.getSubTasksList().getFirst();
@@ -140,7 +140,7 @@ class InMemoryTaskManagerTest {
         task2.setId(task.getId());
         epic2.setId(epic.getId());
         subTask2.setId(subtask.getId());
-        subTask2.setEpicID(epic.getId());//для подзадачи копируем еще и id эпика
+        subTask2.setEpicID(epic.getId()); //для подзадачи копируем еще и id эпика
         //обновляем имеющиеся задачи через менеджер
 
         manager.update(task2);
@@ -168,7 +168,6 @@ class InMemoryTaskManagerTest {
         assertEquals(epic.getSubTasksIDs(), epicNew.getSubTasksIDs(), "списки не совпадают");
         assertEquals(epic.getStatus(), epicNew.getStatus(), "статусы не совпали");
     }
-
 
     @Test
     void delTasksTest() {
