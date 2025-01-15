@@ -31,7 +31,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
         tail = newNode; //создали и перезаписали хвост
-        if (oldTail == null) {// если хвоста не было, создаем и голову тоже
+        if (oldTail == null) { // если хвоста не было, создаем и голову тоже
             head = newNode;
         } else { //если хвост был, обновляем ссылку на новый хвост
             oldTail.next = newNode;
@@ -40,7 +40,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         historyMap.put(task.getId(), newNode);
     }
 
-    private List<Task> getTasks() {//собираем в ArrayList
+    private List<Task> getTasks() { //собираем в ArrayList
         historyList.clear();
         Node<Task> curNode = head;
         if (curNode != null) {
@@ -53,13 +53,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         return new ArrayList<>(historyList);
     }
 
-    private void removeNode(Node<Task> node) {//удааляем узел из списка
+    private void removeNode(Node<Task> node) { //удааляем узел из списка
         //необходимо учесть все варианты где находится данный узел - внутри списка, голова или хвост
         //а также восстановить все ссылки на предыдущий и последующие элементы
         if (node != null) { //если null удалять нечего
             if (node == head) { //удаляем голову
                 final Node<Task> newHead = node.next;
-                if (newHead != null) {//если данный элемент не был последним
+                if (newHead != null) { //если данный элемент не был последним
                     head = newHead;
                     newHead.prev = null;
                 }
@@ -84,7 +84,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task == null) return;
         //проверка на равенство null добавлено в результате сбоя теста subTaskShouldNOTBeEpic() в TaskSubTaskEpicTest
-        if (historyMap.containsKey(task.getId())) {//ищем и удаляем дубликат из списка и из HashMAp
+        if (historyMap.containsKey(task.getId())) { //ищем и удаляем дубликат из списка и из HashMAp
             removeNode(historyMap.get(task.getId()));
             historyMap.remove(task.getId());
         }
@@ -92,7 +92,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id) {//ищем и удаляем задачу из списка и из HashMAp
+    public void remove(int id) { //ищем и удаляем задачу из списка и из HashMAp
         if (historyMap.containsKey(id)) {
             removeNode(historyMap.get(id));
             historyMap.remove(id);
