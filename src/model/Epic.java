@@ -1,9 +1,10 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subTasksIDs;
+    private List<Integer> subTasksIDs;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
     public Epic(String name, String description) {
@@ -27,7 +28,7 @@ public class Epic extends Task {
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры
-    public ArrayList<Integer> getSubTasksIDs() {
+    public List<Integer> getSubTasksIDs() {
         //чтобы не открывать доступ к private переменной, можно subTasksIDs обернуть в new ArrayList<>()
         ArrayList<Integer> subTasksIDs;
         subTasksIDs = new ArrayList<>(this.subTasksIDs);

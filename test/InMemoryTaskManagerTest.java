@@ -192,6 +192,14 @@ class InMemoryTaskManagerTest {
         manager.delEpics();
         assertTrue(manager.getSubTasksList().isEmpty(), "Список SubTasks не пуст");
         assertTrue(manager.getEpicsList().isEmpty(), "Список Epics не пуст");
+
+        //повтороно вызываем методы удаления (зачистка уже пустых списков выполняется корректно,
+        // без ошибок, проверяем список истории
+        manager.delTasks();
+        manager.delSubTasks();
+        manager.delEpics();
+        assertTrue(manager.getHistory().isEmpty(), "Список истории не пустой");
+
     }
 
 }

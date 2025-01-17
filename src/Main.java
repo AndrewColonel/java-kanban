@@ -86,14 +86,27 @@ public class Main {
         System.out.println("-".repeat(20));
         System.out.println();
 
-        System.out.println("Удаляем задачи и Эпик:");
-        System.out.println(manager.getTaskByID(1));
-        manager.delTaskByID(1);
-        System.out.println(manager.getTaskByID(2));
-        manager.delTaskByID(2);
-        System.out.println(manager.getEpicByID(3));
-        manager.delEpicByID(3);
+        System.out.println("Удаляем задачи подзадачи и эпики:");
+        manager.delTasks();
+        manager.delSubTasks();
+        manager.delEpics();
+        System.out.println("Задачи:");
+        for (Task task : manager.getTasksList()) {
+//            System.out.println(task);
+            System.out.println(manager.getTaskByID(task.getId()));
+        }
 
+        System.out.println("Эпики:");
+        for (Task epic : manager.getEpicsList()) {
+//            System.out.println(epic);
+            System.out.println(manager.getEpicByID(epic.getId()));
+
+            for (Task subtask : manager.getSubTasksListByEpic(epic.getId())) {
+                System.out.println("--> " + subtask);
+                manager.getSubTaskByID(subtask.getId());
+
+            }
+        }
 
         System.out.println("История:");
         for (Task task : manager.getHistory()) {
