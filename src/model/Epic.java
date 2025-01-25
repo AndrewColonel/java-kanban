@@ -1,8 +1,10 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
+
+import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subTasksIDs;
+    private List<Integer> subTasksIDs;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
     public Epic(String name, String description) {
@@ -19,8 +21,14 @@ public class Epic extends Task {
         subTasksIDs = new ArrayList<>(); // создание массива хранения id подзадач
     }
 
+    public Epic(Epic epic) {
+        //еще один конструктор для обертки эпиков
+        super(epic.getName(), epic.getId(), epic.getDescription(), epic.getStatus());
+        subTasksIDs = epic.getSubTasksIDs();
+    }
+
     // для всех атрибутов класса нужны геттеры и сеттеры
-    public ArrayList<Integer> getSubTasksIDs() {
+    public List<Integer> getSubTasksIDs() {
         //чтобы не открывать доступ к private переменной, можно subTasksIDs обернуть в new ArrayList<>()
         ArrayList<Integer> subTasksIDs;
         subTasksIDs = new ArrayList<>(this.subTasksIDs);
@@ -40,7 +48,7 @@ public class Epic extends Task {
 
     // 3) добавит единичную подзадачу в хранилище subTasksIDs
     public void addSubTaskID(Integer id) {
-        if (!subTasksIDs.contains(id) && id!=this.getId()) {
+        if (!subTasksIDs.contains(id) && (id != this.getId())) {
             //добавлена условие для коррекции ошибки - совпадения id эпика и подзадачи
             //чтобы эпик нельзя было добавить в себя же как подзадачу
             subTasksIDs.add(id);

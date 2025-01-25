@@ -3,10 +3,7 @@
 //проверьте, что объект model.Subtask нельзя сделать своим же эпиком;
 //проверьте, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import model.TaskStatus;
+import model.*;
 import org.junit.jupiter.api.*;
 import service.Managers;
 import service.TaskManager;
@@ -63,7 +60,8 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicsShouldBeEqualsByID() { //проверяем, что наследники класса model.Task - model.Epic равны друг другу, если равен их id;
+    void epicsShouldBeEqualsByID() {
+        //проверяем, что наследники класса model.Task - model.Epic равны друг другу, если равен их id;
         final int epicID = 1;
         epic1.setId(epicID);
         epic2.setId(epicID);
@@ -73,7 +71,8 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void subTaskShouldBeEqualsByID() { //проверьте, что наследники класса model.Task - SubTask равны, если равен их id;
+    void subTaskShouldBeEqualsByID() {
+        //проверьте, что наследники класса model.Task - SubTask равны, если равен их id;
         final int subTaskID = 1;
         subTask1.setId(subTaskID);
         subTask2.setId(subTaskID);
@@ -89,7 +88,7 @@ class TaskSubTaskEpicTest {
         // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
         int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
         subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
-        manager.addSubTasks(subTask1);//добавляем Подзадачу через менеджер в общее хранилище подзадач
+        manager.add(subTask1); //добавляем Подзадачу через менеджер в общее хранилище подзадач
         Subtask subtask = manager.getSubTaskByID(epicID);
         //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
         // его id должен быть изменен в менеджере и только потом записан в общее хранилище подзадач
@@ -97,7 +96,8 @@ class TaskSubTaskEpicTest {
     }
 
     @Test
-    void epicShouldNOTBeAddedLikeEpic() { //проверяем, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
+    void epicShouldNOTBeAddedLikeEpic() {
+        //проверяем, что объект model.Epic нельзя добавить в самого себя в виде подзадачи;
         // по условиям ТЗ4 - Каждый эпик знает, какие подзадачи в него входят.
         //добавить model.Epic сам в себя в виде подзадачи, это добавить его id в хранилище subTasksIDs
         int epicID = epic1.getId(); //получаем id Эпика
@@ -105,4 +105,13 @@ class TaskSubTaskEpicTest {
         assertFalse(epic1.getSubTasksIDs().contains(epicID), "Задача найдена!");
     }
 
+    @Test
+    void nodeShouldBeEqualswithSameTask() {
+        //проверяем корректность операции сравнения двух узлов связного списка
+        Node<Task> nodeTask1 = new Node<>(task1);
+        Node<Task> nodeTask2 = new Node<>(task1);
+        Node<Task> nodeSubTask1 = new Node<>(subTask1);
+        assertEquals(nodeTask1, nodeTask2, "Узлы не совпадают");
+        assertNotEquals(nodeTask1, nodeSubTask1, "Узлы совпадают");
+    }
 }
