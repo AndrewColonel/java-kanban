@@ -22,13 +22,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try (BufferedReader fileReader = new BufferedReader(
                 new FileReader(file.toPath().toString(), StandardCharsets.UTF_8))) {
 
-            while (fileReader.ready()) {
+            while (fileReader.ready()) { // TODO заменить на Files.readString(file.toPath());.
                 Task task = manager.fromString(fileReader.readLine());
-                if (task != null )    manager.add(task);
-
+                if (task != null) {
+                    if (task instanceof Subtask subtask) { //TODO ихбегать использования instanceof
+                        manager.add(subtask);
+                    } else if (task instanceof Epic epic) {
+                        manager.add(epic);
+                    } else {
+                        manager.add(task);
+                    }
+                }
             }
-        } catch (IOException e) {
-
+        } catch (IOException e) { //TODO заменить на ManagerSaveException
+            System.out.println("Произошла ошибка во время чтения файла.");
         }
 
 
@@ -71,24 +78,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public Task fromString(String value) { //метод разбора строки в поля конструктора задач
         String[] taskfields = value.split(",");
+//        for (String taskfield : taskfields) {
+//            System.out.print(taskfield);
+//        }
+//        System.out.println();
         switch (taskfields[1]) {
             case "TASK":
-                return new Task(taskfields[2], (Integer.getInteger(taskfields[0])),
+                return new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
                         taskfields[4], TaskStatus.valueOf(taskfields[3]));
 
             case "SUBTASK":
-                return new Subtask(taskfields[2], (Integer.getInteger(taskfields[0])),
+                return new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
                         taskfields[4], TaskStatus.valueOf(taskfields[3]),
-                        (Integer.getInteger(taskfields[5])));
+                        (Integer.parseInt(taskfields[5])));
 
             case "EPIC":
-                return new Epic(taskfields[2], (Integer.getInteger(taskfields[0])),
+                return new Epic(taskfields[2], (Integer.parseInt(taskfields[0])),
                         taskfields[4]);
 
             default:
                 return null;
         }
+//    return null;
     }
+
 
     @Override
     public void delTasks() {
@@ -165,31 +178,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public static void main(String[] args) throws IOException {
 
-        TaskStatus statusNew = TaskStatus.NEW;
-        TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
-        TaskStatus statusDone = TaskStatus.DONE;
-
-        TaskManager manager = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
-
-        manager.add(new Task("написать cписок дел",
-                "простая-обычная-задача", statusNew));
-        manager.add(new Task("погулять с собакой еще раз",
-                "простая-обычная-задача", statusNew));
-
-        manager.add(new Epic("Переезд", "Это задача -Эпик №1"));
-        manager.add(new Epic("Проект", "Это задача -Эпик №2"));
-
-        manager.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
-        manager.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
-        manager.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
+//        TaskStatus statusNew = TaskStatus.NEW;
+//        TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
+//        TaskStatus statusDone = TaskStatus.DONE;
+//
+//        TaskManager manager = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
+//
+//        manager.add(new Task("написать cписок дел",
+//                "простая-обычная-задача", statusNew));
+//        manager.add(new Task("погулять с собакой еще раз",
+//                "простая-обычная-задача", statusNew));
+//
+//        manager.add(new Epic("Переезд", "Это задача -Эпик №1"));
+//        manager.add(new Epic("Проект", "Это задача -Эпик №2"));
+//
+//        manager.add(new Subtask("упаковать коробки",
+//                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
+//        manager.add(new Subtask("не забыть кошку",
+//                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
+//        manager.add(new Subtask("написать и согласовать ТЗ", 0,
+//                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
 
 
         TaskManager manager1 =
                 FileBackedTaskManager.loadFromCSVFile(new File("FileBackedTaskManager.csv"));
-
 
         System.out.println("Задачи:");
         for (Task task : manager1.getTasksList()) {
@@ -204,19 +216,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
             for (Task subtask : manager1.getSubTasksListByEpic(epic.getId())) {
                 System.out.println("--> " + subtask);
-                manager.getSubTaskByID(subtask.getId());
-
+                manager1.getSubTaskByID(subtask.getId());
             }
         }
         System.out.println("История:");
         for (Task task : manager1.getHistory()) {
             System.out.println(task);
         }
-
-
     }
-
-
 }
 
 
