@@ -80,14 +80,6 @@ public class Task {
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override
-//    public String toString() {
-//        return "model.Task{" +
-//                "name='" + name + '\'' +
-//                ", id=" + id +
-//                ", description='" + description + '\'' +
-//                ", status=" + status +
-//                '}';
-//    }
     public String toString() {
     return String.format("%s,%s,%s,%s,%s,", getId(),
             TaskType.TASK, getName(), getStatus(),getDescription());

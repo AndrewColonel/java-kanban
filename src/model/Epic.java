@@ -58,20 +58,6 @@ public class Epic extends Task {
     //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
     //классе отдельно
     @Override
-//    public String toString() {
-//        String result;
-//        result = "model.Epic{" +
-//                "name='" + getName() + '\'' +
-//                ", id=" + getId() +
-//                ", description='" + getDescription() + '\'';
-//        if (!subTasksIDs.isEmpty()) {
-//            result = result + ", subtasksIds=" + subTasksIDs;
-//        } else {
-//            result = result + ", subtasksIds=NULL";
-//        }
-//        result = result + ", epicStatus=" + getStatus() + "}";
-//        return result;
-//    }
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,", getId(),
                 TaskType.EPIC, getName(), getStatus(),getDescription());
