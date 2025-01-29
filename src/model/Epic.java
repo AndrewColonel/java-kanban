@@ -62,5 +62,4 @@ public class Epic extends Task {
         return String.format("%s,%s,%s,%s,%s,", getId(),
                 TaskType.EPIC, getName(), getStatus(),getDescription());
     }
-
 }

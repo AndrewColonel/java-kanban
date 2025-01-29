@@ -30,8 +30,6 @@ public class Subtask extends Task {
         return String.format("%s,%s,%s,%s,%s,%s", getId(),
                 TaskType.SUBTASK, getName(), getStatus(),getDescription(),getEpicID());
     }
-
-
 }
 
 
