@@ -1,6 +1,6 @@
 package service;
 
-import exceptions.ManagerLoadExсeption;
+import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;
 import model.*;
 
@@ -62,7 +62,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             //Исключения вида IOException нужно отлавливать внутри метода save
             // и выкидывать собственное непроверяемое исключение ManagerSaveException.
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
-            throw new ManagerLoadExсeption("Произошла ошибка во время чтения файла.");
+            throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
         for (Task task : taskList) {
             if (task instanceof Subtask subtask) {
@@ -167,7 +167,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // дополнительное задание - реализуем пользовательский сценарий
         TaskStatus statusNew = TaskStatus.NEW;
         TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
