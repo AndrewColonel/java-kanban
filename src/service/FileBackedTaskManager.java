@@ -7,9 +7,10 @@ import model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     // менеджер, который после каждой операции будет автоматически сохранять все задачи и их состояние в специальный файл
     File file;
 
@@ -25,7 +26,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return manager;
     }
 
-    public void save() {
+    private void save() {
         // метод save без параметров — он будет сохранять текущее состояние менеджера в файл
         // Он должен сохранять все задачи, подзадачи и эпики.
         try (BufferedWriter fileWriter = new BufferedWriter(
@@ -42,15 +43,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 fileWriter.write(subtask + "\n");
             }
         } catch (IOException e) {
-            //Исключения вида IOException нужно отлавливать внутри метода save
+            // Исключения вида IOException нужно отлавливать внутри метода save
             // и выкидывать собственное непроверяемое исключение ManagerSaveException.
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerSaveException("Произошла ошибка во время записи файла.");
         }
     }
 
-    public void load(File file) {
-        // метод выполняет загручзку считанных из файла перечня задач разных типов в память
+    Comparator<Task> taskComparator = new Comparator<>() {
+        @Override
+        public int compare(Task o1, Task o2) {
+            return (o1.getId() - o2.getId());
+        }
+    };
+
+    private void load(File file) {
+        // метод выполняет загрузку считанных из файла перечня задач разных типов в память
         List<Task> taskList = new ArrayList<>();
         try (BufferedReader fileReader = new BufferedReader(
                 new FileReader(file.toPath().toString(), StandardCharsets.UTF_8))) {
@@ -59,11 +67,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 if (task != null) taskList.add(task);
             }
         } catch (IOException e) {
-            //Исключения вида IOException нужно отлавливать внутри метода save
+            // Исключения вида IOException нужно отлавливать внутри метода save
             // и выкидывать собственное непроверяемое исключение ManagerSaveException.
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
+        taskList.sort(taskComparator);
         for (Task task : taskList) {
             if (task instanceof Subtask subtask) {
                 add(subtask);
@@ -75,7 +84,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public Task fromString(String value) {
+    private Task fromString(String value) {
         // метод создания задачи разных типов из строки
         String[] taskfields = value.split(",");
         switch (taskfields[1]) {
@@ -175,20 +184,46 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         TaskManager managerSave = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
 
+//        managerSave.add(new Task("написать cписок дел",
+//                "простая-обычная-задача", statusNew));
+//        managerSave.add(new Task("погулять с собакой еще раз",
+//                "простая-обычная-задача", statusNew));
+
+        managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
+        managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
+
         managerSave.add(new Task("написать cписок дел",
                 "простая-обычная-задача", statusNew));
         managerSave.add(new Task("погулять с собакой еще раз",
                 "простая-обычная-задача", statusNew));
 
-        managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
-        managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
-
         managerSave.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 1));
         managerSave.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2));
+
+        System.out.println("Задачи:");
+        for (Task task : managerSave.getTasksList()) {
+//            System.out.println(task);
+            System.out.println(managerSave.getTaskByID(task.getId()));
+        }
+
+        System.out.println("Эпики:");
+        for (Task epic : managerSave.getEpicsList()) {
+//            System.out.println(epic);
+            System.out.println(managerSave.getEpicByID(epic.getId()));
+
+            for (Task subtask : managerSave.getSubTasksListByEpic(epic.getId())) {
+                System.out.println("--> " + subtask);
+                managerSave.getSubTaskByID(subtask.getId());
+            }
+        }
+        System.out.println("История:");
+        for (Task task : managerSave.getHistory()) {
+            System.out.println(task);
+        }
 
         // загрузка данных для восстановления работы менеджера из файла
         TaskManager managerLoad =

@@ -8,7 +8,6 @@ import service.FileBackedTaskManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -25,7 +24,7 @@ class FileBackedTaskManagerTest {
     static TaskStatus statusDone = TaskStatus.DONE;
 
     @BeforeEach
-     void setUp() throws IOException {
+    void setUp() throws IOException {
         // создаем  временный пустой файл и экземпляр нового менеджера
         tmpFile = File.createTempFile("data", ".csv");
         managerSave = new FileBackedTaskManager(tmpFile);
@@ -54,10 +53,15 @@ class FileBackedTaskManagerTest {
         List<Epic> loadEpiclist = managerLoad.getEpicsList();
 
         // состояние "памяти"  после операции save-load должны быть равными
-        assertEquals(saveTasklist, loadTasklist, "Задачи после save-load не равны");
-        assertEquals(saveSubTasklist, loadSubTasklist, "Задачи после save-load не равны");
-        assertEquals(saveEpiclist, loadEpiclist, "Задачи после save-load не равны");
-
+        for (int i = 0; i < saveTasklist.size(); i++) {
+            assertEquals(saveTasklist.get(i), loadTasklist.get(i), "Задачи после save-load не равны");
+        }
+        for (int i = 0; i < saveSubTasklist.size(); i++) {
+            assertEquals(saveSubTasklist.get(i), loadSubTasklist.get(i), "Задачи после save-load не равны");
+        }
+        for (int i = 0; i < saveEpiclist.size(); i++) {
+            assertEquals(saveEpiclist.get(i), loadEpiclist.get(i), "Задачи после save-load не равны");
+        }
         tmpFile.delete();
     }
 
@@ -67,13 +71,18 @@ class FileBackedTaskManagerTest {
         // наполняем менеджер задачами  с помощью  наследуемых методов нового менеджера,
         // и заполняем файл
 
+//        managerSave.add(new Task("написать cписок дел",
+//                "простая-обычная-задача", statusNew));
+//        managerSave.add(new Task("погулять с собакой еще раз",
+//                "простая-обычная-задача", statusNew));
+
+        managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
+        managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
+
         managerSave.add(new Task("написать cписок дел",
                 "простая-обычная-задача", statusNew));
         managerSave.add(new Task("погулять с собакой еще раз",
                 "простая-обычная-задача", statusNew));
-
-        managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
-        managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         managerSave.add(new Subtask("упаковать коробки",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
@@ -101,10 +110,15 @@ class FileBackedTaskManagerTest {
         List<Epic> loadEpiclist = managerLoad.getEpicsList();
 
         // состояние "памяти"  после операции save-load должны быть равными
-        assertEquals(saveTasklist, loadTasklist, "Задачи после save-load не равны");
-        assertEquals(saveSubTasklist, loadSubTasklist, "Задачи после save-load не равны");
-        assertEquals(saveEpiclist, loadEpiclist, "Задачи после save-load не равны");
-
+        for (int i = 0; i < saveTasklist.size(); i++) {
+            assertEquals(saveTasklist.get(i), loadTasklist.get(i), "Задачи после save-load не равны");
+        }
+        for (int i = 0; i < saveSubTasklist.size(); i++) {
+            assertEquals(saveSubTasklist.get(i), loadSubTasklist.get(i), "Задачи после save-load не равны");
+        }
+        for (int i = 0; i < saveEpiclist.size(); i++) {
+            assertEquals(saveEpiclist.get(i), loadEpiclist.get(i), "Задачи после save-load не равны");
+        }
         tmpFile.delete();
     }
 
