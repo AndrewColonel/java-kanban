@@ -173,45 +173,45 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
         TaskStatus statusDone = TaskStatus.DONE;
 
-        TaskManager managerStart = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
+        TaskManager managerSave = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
 
-        managerStart.add(new Task("написать cписок дел",
+        managerSave.add(new Task("написать cписок дел",
                 "простая-обычная-задача", statusNew));
-        managerStart.add(new Task("погулять с собакой еще раз",
+        managerSave.add(new Task("погулять с собакой еще раз",
                 "простая-обычная-задача", statusNew));
 
-        managerStart.add(new Epic("Переезд", "Это задача -Эпик №1"));
-        managerStart.add(new Epic("Проект", "Это задача -Эпик №2"));
+        managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
+        managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
-        managerStart.add(new Subtask("упаковать коробки",
+        managerSave.add(new Subtask("упаковать коробки",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
-        managerStart.add(new Subtask("не забыть кошку",
+        managerSave.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
-        managerStart.add(new Subtask("написать и согласовать ТЗ", 0,
+        managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
 
         // загрузка данных для восстановления работы менеджера из файла
-        TaskManager manager =
+        TaskManager managerLoad =
                 FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
 
         System.out.println("Задачи:");
-        for (Task task : manager.getTasksList()) {
+        for (Task task : managerLoad.getTasksList()) {
 //            System.out.println(task);
-            System.out.println(manager.getTaskByID(task.getId()));
+            System.out.println(managerLoad.getTaskByID(task.getId()));
         }
 
         System.out.println("Эпики:");
-        for (Task epic : manager.getEpicsList()) {
+        for (Task epic : managerLoad.getEpicsList()) {
 //            System.out.println(epic);
-            System.out.println(manager.getEpicByID(epic.getId()));
+            System.out.println(managerLoad.getEpicByID(epic.getId()));
 
-            for (Task subtask : manager.getSubTasksListByEpic(epic.getId())) {
+            for (Task subtask : managerLoad.getSubTasksListByEpic(epic.getId())) {
                 System.out.println("--> " + subtask);
-                manager.getSubTaskByID(subtask.getId());
+                managerLoad.getSubTaskByID(subtask.getId());
             }
         }
         System.out.println("История:");
-        for (Task task : manager.getHistory()) {
+        for (Task task : managerLoad.getHistory()) {
             System.out.println(task);
         }
     }
