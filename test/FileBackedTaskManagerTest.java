@@ -34,7 +34,7 @@ class FileBackedTaskManagerTest {
     @Test
     void emptyFileSaveLoadTest() throws IOException {
         Long fileSizeBeforeSave = Files.size(tmpFile.toPath());
-               List<Task> saveTasklist = managerSave.getTasksList();
+        List<Task> saveTasklist = managerSave.getTasksList();
         List<Subtask> saveSubTasklist = managerSave.getSubTasksList();
         List<Epic> saveEpiclist = managerSave.getEpicsList();
 
@@ -57,7 +57,6 @@ class FileBackedTaskManagerTest {
         for (int i = 0; i < saveEpiclist.size(); i++) {
             assertEquals(saveEpiclist.get(i), loadEpiclist.get(i), "Задачи после save-load не равны");
         }
-        tmpFile.delete();
     }
 
     @Test
@@ -75,11 +74,14 @@ class FileBackedTaskManagerTest {
                 "простая-обычная-задача", statusNew));
 
         managerSave.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 1));
         managerSave.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 4));
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2));
+
+        managerSave.delTaskByID(4);
+        managerSave.delEpicByID(2);
 
         Long fileSizeAfterSave = Files.size(tmpFile.toPath());
         // после сохранения "наполненного" менеджера, файл наполняется з
@@ -107,9 +109,11 @@ class FileBackedTaskManagerTest {
             assertEquals(saveSubTasklist.get(i), loadSubTasklist.get(i), "Задачи после save-load не равны");
         }
         for (int i = 0; i < saveEpiclist.size(); i++) {
+
             assertEquals(saveEpiclist.get(i), loadEpiclist.get(i), "Задачи после save-load не равны");
+            assertEquals(saveEpiclist.get(i).getStatus(), loadEpiclist.get(i).getStatus(),
+                    "Статусы Эпика после save-load не равны");
         }
-        tmpFile.delete();
     }
 
     @AfterAll

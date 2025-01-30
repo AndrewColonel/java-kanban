@@ -20,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Subtask> subTasks;
 
     private int nextId; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
-    //private List<model.Task> historyList = new ArrayList<>(); - перернесен в service.InMemoryHistoryManager
+    //private List<model.Task> historyList = new ArrayList<>(); - перенесен в service.InMemoryHistoryManager
     HistoryManager historyManager;
 
     public InMemoryTaskManager() {
@@ -29,6 +29,30 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasks = new HashMap<>();
         this.nextId = 1;
         this.historyManager = Managers.getDefaultHistory();
+    }
+
+    protected void setNextId(int nextId) {
+        this.nextId = nextId;
+    }
+
+    protected void recovery(Task task) {
+        // метод восстановления в "память" менеджера задач из файла
+        // считаем что "память" в файл сохранилась корректно и потерянных эпиков и подзадач нет
+        if (task instanceof Subtask subtask) {
+            subTasks.put(subtask.getId(), subtask);
+        } else if (task instanceof Epic epic) {
+            epics.put(epic.getId(), epic);
+        } else {
+            tasks.put(task.getId(), task);
+        }
+        //восстанавливаем внутренний список эпиков и их статусы
+        for (Subtask subtask : subTasks.values()) {
+            Epic epic = epics.get((subtask.getEpicID()));
+            if (epic != null) {
+                epic.addSubTaskID(subtask.getId());
+                calculateEpicStatus(epic);
+            }
+        }
     }
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
@@ -67,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void delTasks() {
         for (Integer taskId : tasks.keySet()) {
-            //удаляем-чистим историю задач перд удалением списка всех задача
+            //удаляем-чистим историю задач перед удалением списка всех задача
             historyManager.remove(taskId);
         }
         tasks.clear();
@@ -95,9 +119,9 @@ public class InMemoryTaskManager implements TaskManager {
             for (Integer subTasksID : epics.get(epicId).getSubTasksIDs()) {
                 historyManager.remove(subTasksID); //чистим историю подзадач
             }
-            historyManager.remove(epicId); //и чистим историю эпиков'
+            historyManager.remove(epicId); //и чистим историю эпиков
         }
-        epics.clear(); //удаляем списко эпиков
+        epics.clear(); //удаляем список эпиков
         subTasks.clear(); //удаляем все подзадачи, они сами по себе не существуют
     }
 
@@ -179,7 +203,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void update(Epic epic) {
         //Метод может обновить всего два поля: name и description, при этом эпик остается прежним, как объект в памяти,
-        // в отличии от задач и подзадач
+        // в отличие от задач и подзадач
         // Поэтому можно выполнить обертку эпика и замену его в списке-хранилище
         if (epics.containsKey(epic.getId())) { //обновляем только существующий эпик
             Epic updatedEpic = epics.get(epic.getId());

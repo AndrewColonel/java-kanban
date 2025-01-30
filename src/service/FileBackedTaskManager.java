@@ -50,12 +50,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    Comparator<Task> taskCompareByID = new Comparator<>() {
-        @Override
-        public int compare(Task o1, Task o2) {
-            return (o1.getId() - o2.getId());
-        }
-    };
+    // компоратор с использованием лябда-функции для сортировки списка задач на восстановление по id
+    Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
 
     private void load(File file) {
         // метод выполняет загрузку считанных из файла перечня задач разных типов в память
@@ -72,16 +68,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
-
         taskList.sort(taskCompareByID);
-
-        for (Task task : taskList) {
-            if (task instanceof Subtask subtask) {
-                add(subtask);
-            } else if (task instanceof Epic epic) {
-                add(epic);
-            } else {
-                add(task);
+        // после сортировки последний выданный счетчиком id принадлежит крайнему элементу,
+        // необходимо для продолжения корректной работы счетчика менеджера установить
+        // следующее за крайним id стартовое значение счетчика, т.е. LastID+1
+        // для восстановления "памяти" и счетчика (private поля класса InMemmoryTaskManage)
+        // используем protected методы того же класса
+        if (!taskList.isEmpty()) {
+            setNextId(taskList.getLast().getId() + 1);
+            for (Task task : taskList) {
+                recovery(task);
             }
         }
     }
@@ -180,6 +176,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
         // дополнительное задание - реализуем пользовательский сценарий
+        System.out.println();
+        System.out.println("Обычная работа менеджера");
+        System.out.println("-".repeat(20));
+
         TaskStatus statusNew = TaskStatus.NEW;
         TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
         TaskStatus statusDone = TaskStatus.DONE;
@@ -200,6 +200,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2));
+
+        managerSave.delTaskByID(4);
+        managerSave.delEpicByID(2);
 
         System.out.println("Задачи:");
         for (Task task : managerSave.getTasksList()) {
@@ -222,9 +225,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             System.out.println(task);
         }
 
+        System.out.println();
+        System.out.println();
+        System.out.println("Работа менеджера после восстановления");
+        System.out.println("-".repeat(20));
+
+
         // загрузка данных для восстановления работы менеджера из файла
         TaskManager managerLoad =
                 FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
+
+        managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
+        managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 7));
 
         System.out.println("Задачи:");
         for (Task task : managerLoad.getTasksList()) {
