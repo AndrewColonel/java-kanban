@@ -50,7 +50,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    Comparator<Task> taskComparator = new Comparator<>() {
+    Comparator<Task> taskCompareByID = new Comparator<>() {
         @Override
         public int compare(Task o1, Task o2) {
             return (o1.getId() - o2.getId());
@@ -72,7 +72,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
-        taskList.sort(taskComparator);
+
+        taskList.sort(taskCompareByID);
+
         for (Task task : taskList) {
             if (task instanceof Subtask subtask) {
                 add(subtask);
@@ -183,11 +185,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         TaskStatus statusDone = TaskStatus.DONE;
 
         TaskManager managerSave = new FileBackedTaskManager(new File("FileBackedTaskManager.csv"));
-
-//        managerSave.add(new Task("написать cписок дел",
-//                "простая-обычная-задача", statusNew));
-//        managerSave.add(new Task("погулять с собакой еще раз",
-//                "простая-обычная-задача", statusNew));
 
         managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));

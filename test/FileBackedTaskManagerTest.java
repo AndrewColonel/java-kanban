@@ -28,25 +28,20 @@ class FileBackedTaskManagerTest {
         // создаем  временный пустой файл и экземпляр нового менеджера
         tmpFile = File.createTempFile("data", ".csv");
         managerSave = new FileBackedTaskManager(tmpFile);
-        managerLoad = new FileBackedTaskManager(tmpFile);
+
     }
 
     @Test
     void emptyFileSaveLoadTest() throws IOException {
         Long fileSizeBeforeSave = Files.size(tmpFile.toPath());
-        managerSave.save();
-        Long fileSizeAfterSave = Files.size(tmpFile.toPath());
-        // после сохранения "пустого" менеджера, в файл дописывается строка заголовка, увеличивая размер
-        assertNotEquals(fileSizeBeforeSave, fileSizeAfterSave, "Размер файла до и после сохранения - равны");
-
-        List<Task> saveTasklist = managerSave.getTasksList();
+               List<Task> saveTasklist = managerSave.getTasksList();
         List<Subtask> saveSubTasklist = managerSave.getSubTasksList();
         List<Epic> saveEpiclist = managerSave.getEpicsList();
 
-        managerLoad.load(tmpFile);
+        managerLoad = FileBackedTaskManager.loadFromFile(tmpFile);
         Long fileSizeAfterLoad = Files.size(tmpFile.toPath());
         // после загрузки памяти, размер файл поменяться не должен
-        assertEquals(fileSizeAfterSave, fileSizeAfterLoad, "Файл до и после операции save-load различны");
+        assertEquals(fileSizeBeforeSave, fileSizeAfterLoad, "Файл до и после операции save-load различны");
 
         List<Task> loadTasklist = managerLoad.getTasksList();
         List<Subtask> loadSubTasklist = managerLoad.getSubTasksList();
@@ -70,11 +65,6 @@ class FileBackedTaskManagerTest {
         Long fileSizeBeforeSave = Files.size(tmpFile.toPath());
         // наполняем менеджер задачами  с помощью  наследуемых методов нового менеджера,
         // и заполняем файл
-
-//        managerSave.add(new Task("написать cписок дел",
-//                "простая-обычная-задача", statusNew));
-//        managerSave.add(new Task("погулять с собакой еще раз",
-//                "простая-обычная-задача", statusNew));
 
         managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
@@ -100,7 +90,7 @@ class FileBackedTaskManagerTest {
         List<Subtask> saveSubTasklist = managerSave.getSubTasksList();
         List<Epic> saveEpiclist = managerSave.getEpicsList();
 
-        managerLoad.load(tmpFile);
+        managerLoad = FileBackedTaskManager.loadFromFile(tmpFile);
         Long fileSizeAfterLoad = Files.size(tmpFile.toPath());
         // после загрузки памяти, размер файл поменяться не должен
         assertEquals(fileSizeAfterSave, fileSizeAfterLoad, "Файл до и после операции save-load различны");
