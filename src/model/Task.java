@@ -1,6 +1,7 @@
 package model;//Публичный не абстрактный базовый класс model.Task, который представляет "простую" задачу.
 
 // Базовый класс для подзадач и эпика.
+
 import java.util.Objects;
 
 public class Task {
@@ -9,6 +10,7 @@ public class Task {
     private int id;
     private String description;
     private TaskStatus status;
+
 
     //Конструктор для создания новых задач и подзадач
     public Task(String name, String description, TaskStatus status) {
@@ -79,13 +81,10 @@ public class Task {
     //классе отдельно
     @Override
     public String toString() {
-        return "model.Task{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+    return String.format("%s,%s,%s,%s,%s,", getId(),
+            TaskType.TASK, getName(), getStatus(),getDescription());
     }
+
 
     //методы equals() и hashCode() будут переопределены в базовом классе и будут переданы всем наследникам
     //переопределяем метод для сравнения объектов (задач) - задачи с одинаковыми id будут считаться равными

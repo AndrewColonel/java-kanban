@@ -27,13 +27,8 @@ public class Subtask extends Task {
     //классе отдельно
     @Override
     public String toString() {
-        return "model.Subtask{" +
-                "name='" + getName() + '\'' +
-                ", id=" + getId() +
-                ", epicID=" + getEpicID() +
-                ", description='" + getDescription() + '\'' +
-                ", status=" + getStatus() +
-                '}';
+        return String.format("%s,%s,%s,%s,%s,%s", getId(),
+                TaskType.SUBTASK, getName(), getStatus(),getDescription(),getEpicID());
     }
 }
 
