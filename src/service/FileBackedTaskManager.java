@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     // менеджер, который после каждой операции будет автоматически сохранять все задачи и их состояние в специальный файл
@@ -51,7 +52,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     // компоратор с использованием лябда-функции для сортировки списка задач на восстановление по id
-    Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
+//    Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
 
     private void load(File file) {
         // метод выполняет загрузку считанных из файла перечня задач разных типов в память
@@ -59,8 +60,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader fileReader = new BufferedReader(
                 new FileReader(file.toPath().toString(), StandardCharsets.UTF_8))) {
             while (fileReader.ready()) {
-                Task task = fromString(fileReader.readLine());
-                if (task != null) taskList.add(task);
+                // Открываем Optional коробку
+                Optional<Task> maybeTask = fromString(fileReader.readLine());
+                // if (maybeTask.isPresent()) taskList.add(maybeTask.get());
+                maybeTask.ifPresent(taskList::add);
+                // Task task = fromString(fileReader.readLine());
+                // if (task != null) taskList.add(task);
             }
         } catch (IOException e) {
             // Исключения вида IOException нужно отлавливать внутри метода save
@@ -68,7 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
-        taskList.sort(taskCompareByID);
+        taskList.sort((o1, o2) -> (o1.getId() - o2.getId()));
         // после сортировки последний выданный счетчиком id принадлежит крайнему элементу,
         // необходимо для продолжения корректной работы счетчика менеджера установить
         // следующее за крайним id стартовое значение счетчика, т.е. LastID+1
@@ -82,22 +87,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private Task fromString(String value) {
+    private Optional<Task> fromString(String value) {
         // метод создания задачи разных типов из строки
+        // отсутствие значения является валидным результатом работы метода, сипользуем Optional
         String[] taskfields = value.split(",");
         switch (taskfields[1]) {
             case "TASK":
-                return new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
-                        taskfields[4], TaskStatus.valueOf(taskfields[3]));
+                return Optional.of(new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
+                        taskfields[4], TaskStatus.valueOf(taskfields[3])));
             case "SUBTASK":
-                return new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
+                return Optional.of(new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
                         taskfields[4], TaskStatus.valueOf(taskfields[3]),
-                        (Integer.parseInt(taskfields[5])));
+                        (Integer.parseInt(taskfields[5]))));
             case "EPIC":
-                return new Epic(taskfields[2], (Integer.parseInt(taskfields[0])),
-                        taskfields[4]);
+                return Optional.of(new Epic(taskfields[2], (Integer.parseInt(taskfields[0])),
+                        taskfields[4]));
             default:
-                return null;
+                return Optional.empty();
         }
     }
 
