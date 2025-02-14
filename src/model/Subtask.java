@@ -43,7 +43,7 @@ public class Subtask extends Task {
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s", getId(),
                 TaskType.SUBTASK, getName(), getStatus(), getDescription(),
-                getEpicID(),getStartTime(),getDuration());
+                getEpicID(),getStartTime().format(dateTimeFormatter),getDuration());
     }
 }
 

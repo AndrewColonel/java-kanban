@@ -17,6 +17,8 @@ public class Task {
     private LocalDateTime startTime;
 
 
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+
     //Конструктор для создания новых задач и подзадач
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
@@ -30,8 +32,7 @@ public class Task {
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
-        this.startTime = LocalDateTime.parse(startTime,
-                DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"));
+        this.startTime = LocalDateTime.parse(startTime,dateTimeFormatter);
     }
 
     //Конструктор для создания новых задач и подзадач
@@ -41,8 +42,7 @@ public class Task {
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
-        this.startTime = LocalDateTime.parse(startTime,
-                DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"));
+        this.startTime = LocalDateTime.parse(startTime, dateTimeFormatter);
     }
 
     //конструктор для обновления существующих задач и подзадач
@@ -128,7 +128,8 @@ public class Task {
     @Override
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,", getId(),
-                TaskType.TASK, getName(), getStatus(), getDescription(),getStartTime(), getDuration());
+                TaskType.TASK, getName(), getStatus(), getDescription(),
+                getStartTime().format(dateTimeFormatter), getDuration());
     }
 
 

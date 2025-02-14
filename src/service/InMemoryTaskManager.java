@@ -52,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get((subtask.getEpicID()));
             if (epic != null) {
                 epic.addSubTaskID(subtask.getId());
-                calculateEpicStatus(epic);
+                calculateEpicParams(epic);
             }
         }
     }
@@ -105,7 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer epicId : epics.keySet()) {
             Epic epic = epics.get(epicId);
             epic.delAllSubTasksIDs(); //также очищает внутренние хранилища всех эпиков
-            calculateEpicStatus(epic); //и выставляет статус очищенных эпиков в NEW
+            calculateEpicParams(epic); //и выставляет статус очищенных эпиков в NEW
         }
         for (Integer subTaskId : subTasks.keySet()) {
             historyManager.remove(subTaskId); //и чистим историю подзадач
@@ -169,12 +169,13 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
             Epic epic = epics.get(subtask.getEpicID()); //вытаскиваем необходимый эпик для добавления подзадачи
             epic.addSubTaskID(subtask.getId()); // и добавляется в список эпика
-            calculateEpicStatus(epic); // добавилась новая подзадача, рассчитаем статус эпика
+            calculateEpicParams(epic); // добавилась новая подзадача, рассчитаем статус эпика
         }
     }
 
     @Override
     public void add(Epic epic) {
+        calculateEpicParams(epic);
         epic.setId(nextId++);
         epics.put(epic.getId(), epic);
     }
@@ -197,7 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
                 // проверяем равенство epicID старой и новой подзадачи
                 subTasks.put(subtask.getId(), subtask);//Обновляем подзадачу в хранилище subTasks
                 //Пересчитываем статус Эпика, к которой прилинкована эта подзадача
-                calculateEpicStatus(epics.get(subtask.getEpicID()));
+                calculateEpicParams(epics.get(subtask.getEpicID()));
             }
         }
     }
@@ -231,7 +232,7 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subTask = subTasks.get(id);
             Epic epic = epics.get(subTask.getEpicID());
             epic.delSubTaskID(id);
-            calculateEpicStatus(epic); //удалили подзадачу, пересчитали статус
+            calculateEpicParams(epic); //удалили подзадачу, пересчитали статус
             subTasks.remove(id);
             historyManager.remove(id);//удаляем задачу из истории
         }
@@ -267,7 +268,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // метод расчета статуса эпика в зависимости от статусов подзадач
-    private void calculateEpicStatus(Epic epic) {
+    private void calculateEpicParams(Epic epic) {
         // метод не должен быть публичным, так как является частью реализации
         // и не должен быть виден или доступен для внешних потребителей
         if (epic != null) { //если такой эпик нашелся
