@@ -5,6 +5,8 @@ import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -271,6 +273,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) { //если такой эпик нашелся
             int countNew = 0;
             int countDone = 0;
+
+            LocalDateTime startTime = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
+            LocalDateTime endTime = LocalDateTime.of(0, 1, 1, 0, 0, 0);
+
             epic.setStatus(TaskStatus.NEW);
             List<Integer> subTasksIDs = epic.getSubTasksIDs(); // вытаскиваем список подзадач данного эпика
             for (Integer i : subTasksIDs) { //перебираем этот список подзадач
@@ -293,8 +299,24 @@ public class InMemoryTaskManager implements TaskManager {
                     // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
                     epic.setStatus(TaskStatus.IN_PROGRESS);
                 }
+
+                //TODO расчет полей startTime, endTime и duration - переписать все в потоке
+
+                // определяем самый ранний старт  подзадачи
+                if (subtask.getStartTime().isBefore(startTime)) startTime = subtask.getStartTime();
+                // определяем самое позднее завершение подзадачи
+                if (subtask.getEndTime().isAfter(endTime)) endTime = subtask.getEndTime();
+
             }
+            // передаем параметры начала, завершения и продолджительнсти в поля эпика
+            epic.setStartTime(startTime);
+            epic.setEndTime(endTime);
+            Duration duration = Duration.between(startTime,endTime);
+            epic.setDuration(duration.toMinutes());
         }
+
     }
+
+
 
 }

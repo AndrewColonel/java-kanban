@@ -2,6 +2,9 @@ package model;//Публичный не абстрактный базовый к
 
 // Базовый класс для подзадач и эпика.
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -10,6 +13,8 @@ public class Task {
     private int id;
     private String description;
     private TaskStatus status;
+    private Duration duration;
+    private LocalDateTime startTime;
 
 
     //Конструктор для создания новых задач и подзадач
@@ -17,6 +22,27 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    //Конструктор для создания новых задач и подзадач
+    public Task(String name, String description, TaskStatus status, int duration, String startTime) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = Duration.ofMinutes(duration);
+        this.startTime = LocalDateTime.parse(startTime,
+                DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"));
+    }
+
+    //Конструктор для создания новых задач и подзадач
+    public Task(String name, int id, String description, TaskStatus status, int duration, String startTime) {
+        this.name = name;
+        this.id = id;
+        this.description = description;
+        this.status = status;
+        this.duration = Duration.ofMinutes(duration);
+        this.startTime = LocalDateTime.parse(startTime,
+                DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"));
     }
 
     //конструктор для обновления существующих задач и подзадач
@@ -42,6 +68,26 @@ public class Task {
         this.description = description;
         //для Эпиков при создании status должен быть NEW, а не оставаться null
         status = TaskStatus.NEW;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Long getDuration() {
+        return duration.toMinutes();
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = Duration.ofMinutes(duration);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры
@@ -81,8 +127,8 @@ public class Task {
     //классе отдельно
     @Override
     public String toString() {
-    return String.format("%s,%s,%s,%s,%s,", getId(),
-            TaskType.TASK, getName(), getStatus(),getDescription());
+        return String.format("%s,%s,%s,%s,%s,%s,%s,", getId(),
+                TaskType.TASK, getName(), getStatus(), getDescription(),getStartTime(), getDuration());
     }
 
 

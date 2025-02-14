@@ -1,10 +1,12 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
     private List<Integer> subTasksIDs;
+    private LocalDateTime endTime;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
     public Epic(String name, String description) {
@@ -35,6 +37,15 @@ public class Epic extends Task {
         return subTasksIDs;
     }
 
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     //в этот класс нужно добавить три метода
     // 1) удалит единичную подзадачу из хранилища subTasksIDs
     public void delSubTaskID(Integer id) {
@@ -59,7 +70,8 @@ public class Epic extends Task {
     //классе отдельно
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,", getId(),
-                TaskType.EPIC, getName(), getStatus(),getDescription());
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,", getId(),
+                TaskType.EPIC, getName(), getStatus(),getDescription(),
+                getStartTime(),getEndTime(),getDuration());
     }
 }

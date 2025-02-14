@@ -15,6 +15,20 @@ public class Subtask extends Task {
         this.epicID = epicID;
     }
 
+    public Subtask(String name, String description, TaskStatus status, int duration,
+                   String startTime, int epicID) {
+        //Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
+        super(name, description, status, duration, startTime);
+        this.epicID = epicID;
+    }
+
+    public Subtask(String name, int id, String description, TaskStatus status, int duration,
+                   String startTime, int epicID) {
+        //Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
+        super(name, id, description, status, duration, startTime);
+        this.epicID = epicID;
+    }
+
     public int getEpicID() {
         return epicID;
     }
@@ -27,8 +41,9 @@ public class Subtask extends Task {
     //классе отдельно
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s", getId(),
-                TaskType.SUBTASK, getName(), getStatus(),getDescription(),getEpicID());
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s", getId(),
+                TaskType.SUBTASK, getName(), getStatus(), getDescription(),
+                getEpicID(),getStartTime(),getDuration());
     }
 }
 
