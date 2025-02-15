@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private List<Integer> subTasksIDs;
+    private final List<Integer> subTasksIDs;
     private LocalDateTime endTime;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
@@ -27,6 +27,7 @@ public class Epic extends Task {
         //еще один конструктор для обертки эпиков
         super(epic.getName(), epic.getId(), epic.getDescription(), epic.getStatus());
         subTasksIDs = epic.getSubTasksIDs();
+        endTime = epic.getEndTime();
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры

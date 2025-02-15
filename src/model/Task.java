@@ -27,16 +27,16 @@ public class Task {
     }
 
     //Конструктор для создания новых задач и подзадач
-    public Task(String name, String description, TaskStatus status, int duration, String startTime) {
+    public Task(String name, String description, TaskStatus status, String startTime, int duration) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
-        this.startTime = LocalDateTime.parse(startTime,dateTimeFormatter);
+        this.startTime = LocalDateTime.parse(startTime, dateTimeFormatter);
     }
 
     //Конструктор для создания новых задач и подзадач
-    public Task(String name, int id, String description, TaskStatus status, int duration, String startTime) {
+    public Task(String name, int id, String description, TaskStatus status, String startTime, int duration) {
         this.name = name;
         this.id = id;
         this.description = description;
@@ -71,7 +71,7 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plusMinutes(duration.toMinutes());
+        return startTime.plus(duration);
     }
 
     public LocalDateTime getStartTime() {
@@ -140,8 +140,6 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        //return id == task.id && Objects.equals(name, task.name) && Objects.equals(description,
-        //task.description) && status == task.status;
         return id == task.id;
     }
 

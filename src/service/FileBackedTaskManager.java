@@ -6,8 +6,8 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    // компоратор с использованием лябда-функции для сортировки списка задач на восстановление по id
+    // компаратор с использованием лямбда-функции для сортировки списка задач на восстановление по id
 //    Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
 
     private void load(File file) {
@@ -74,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
         taskList.sort((o1, o2) -> (o1.getId() - o2.getId()));
-        // после сортировки последний выданный счетчиком id принадлежит крайнему элементу,
+        // после сортировки последний выданный счетчиком id принадлежит крайнему элементу
         // необходимо для продолжения корректной работы счетчика менеджера установить
         // следующее за крайним id стартовое значение счетчика, т.е. LastID+1
         // для восстановления "памяти" и счетчика (private поля класса InMemmoryTaskManage)
@@ -89,23 +89,59 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Optional<Task> fromString(String value) {
         // метод создания задачи разных типов из строки
-        // отсутствие значения является валидным результатом работы метода, сипользуем Optional
+        // отсутствие значения является валидным результатом работы метода, используем Optional
         String[] taskfields = value.split(",");
-        switch (taskfields[1]) {
-            case "TASK":
-                return Optional.of(new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
-                        taskfields[4], TaskStatus.valueOf(taskfields[3]),
-                        Integer.parseInt(taskfields[6]), taskfields[5]));
-            case "SUBTASK":
-                return Optional.of(new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
-                        taskfields[4], TaskStatus.valueOf(taskfields[3]),
-                        Integer.parseInt(taskfields[7]),taskfields[6],
-                        (Integer.parseInt(taskfields[5]))));
-            case "EPIC":
-                return Optional.of(new Epic(taskfields[2], (Integer.parseInt(taskfields[0])),
-                        taskfields[4]));
-            default:
-                return Optional.empty();
+        try { // если строка пришла битая и массив не собрался
+            switch (taskfields[1]) {
+                case "TASK":
+                    try {
+                        return Optional.of(new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
+                                taskfields[4], TaskStatus.valueOf(taskfields[3]),
+                                taskfields[5], Integer.parseInt(taskfields[6])));
+                    } catch (DateTimeParseException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга даты объекта TASK - "
+                                + e.getMessage());
+                    } catch (NumberFormatException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга чисел объекта TASK - "
+                                + e.getMessage());
+                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга полей объекта TASK - "
+                                + e.getMessage());
+                    }
+                case "SUBTASK":
+                    try {
+                        return Optional.of(new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
+                                taskfields[4], TaskStatus.valueOf(taskfields[3]),
+                                Integer.parseInt(taskfields[5]), taskfields[6],
+                                (Integer.parseInt(taskfields[7]))));
+                    } catch (DateTimeParseException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга даты объекта SUBTASK - "
+                                + e.getMessage());
+                    } catch (NumberFormatException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга чисел объекта SUBTASK - "
+                                + e.getMessage());
+                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга строки объекта SUBTASK - "
+                                + e.getMessage());
+                    }
+                case "EPIC":
+                    try {
+                        return Optional.of(new Epic(taskfields[2], (Integer.parseInt(taskfields[0])),
+                                taskfields[4]));
+                    } catch (NumberFormatException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга номера id объекта EPIC - "
+                                + e.getMessage());
+                    } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+                        throw new ManagerLoadException("Произошла ошибка во время парсинга строки объекта EPIC - "
+                                + e.getMessage());
+                    }
+                default:
+                    return Optional.empty();
+
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ManagerLoadException("Произошла ошибка во время парсинга строки из файла - "
+                    + e.getMessage());
         }
     }
 
@@ -198,19 +234,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         managerSave.add(new Task("написать cписок дел",
-                "простая-обычная-задача", statusNew,10, "10.10.2024-00:00"));
+                "простая-обычная-задача", statusNew, "10.10.2024-00:00", 10));
         managerSave.add(new Task("погулять с собакой еще раз",
-                "простая-обычная-задача", statusNew,30, "10.10.2024-09:00"));
+                "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30));
 
         managerSave.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress,60,
-                "10.01.2025-17:00", 1));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress,1,
+                "10.01.2025-17:00", 60));
         managerSave.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew,5,
-                "10.01.2025-17:55", 1));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew,1,
+                "10.01.2025-17:55", 5));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 1000,
-                "15.02.2025-10:00",2));
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
+                "15.02.2025-10:00",1000));
 
         managerSave.delTaskByID(4);
         managerSave.delEpicByID(2);
@@ -248,8 +284,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
         managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone,30,
-                "17.02.2025-11:30", 7));
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone,7,
+                "17.02.2025-11:30", 30));
 
         System.out.println("Задачи:");
         for (Task task : managerLoad.getTasksList()) {

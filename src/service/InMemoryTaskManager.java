@@ -17,9 +17,9 @@ public class InMemoryTaskManager implements TaskManager {
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
 
     //теперь и эти хранилища можно объявить через интерфейс Map, а не класс HashMap
-    private Map<Integer, Task> tasks;
-    private Map<Integer, Epic> epics;
-    private Map<Integer, Subtask> subTasks;
+    private final Map<Integer, Task> tasks;
+    private final Map<Integer, Epic> epics;
+    private final Map<Integer, Subtask> subTasks;
 
     private int nextId; //Идентификатор задача - уникальное число для сквозной нумерации всех типов задач
     //private List<model.Task> historyList = new ArrayList<>(); - перенесен в service.InMemoryHistoryManager
@@ -303,13 +303,13 @@ public class InMemoryTaskManager implements TaskManager {
 
                 //TODO расчет полей startTime, endTime и duration - переписать все в потоке
 
-                // определяем самый ранний старт  подзадачи
+                // определяем самый ранний старт подзадачи
                 if (subtask.getStartTime().isBefore(startTime)) startTime = subtask.getStartTime();
                 // определяем самое позднее завершение подзадачи
                 if (subtask.getEndTime().isAfter(endTime)) endTime = subtask.getEndTime();
 
             }
-            // передаем параметры начала, завершения и продолджительнсти в поля эпика
+            // передаем параметры начала, завершения и продолжительности в поля эпика
             epic.setStartTime(startTime);
             epic.setEndTime(endTime);
             Duration duration = Duration.between(startTime,endTime);
