@@ -70,6 +70,14 @@ public class Task {
         status = TaskStatus.NEW;
     }
 
+//    public static int compareByStartTime(Task t1, Task t2) {
+//        return t1.getStartTime().compareTo(t2.getStartTime());
+//    }
+//
+    public Boolean isStartTimeValid() {
+        return (getStartTime() != null);
+    }
+
     public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }

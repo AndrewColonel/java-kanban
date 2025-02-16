@@ -234,22 +234,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         managerSave.add(new Task("написать cписок дел",
-                "простая-обычная-задача", statusNew, "10.10.2024-00:00", 10));
+                "простая-обычная-задача", statusNew, "10.10.2026-00:00", 10));
         managerSave.add(new Task("погулять с собакой еще раз",
                 "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30));
 
         managerSave.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress,1,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 1,
                 "10.01.2025-17:00", 60));
         managerSave.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew,1,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1,
                 "10.01.2025-17:55", 5));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
-                "15.02.2025-10:00",1000));
+                "15.02.2025-10:00", 1000));
 
         managerSave.delTaskByID(4);
         managerSave.delEpicByID(2);
+
 
         System.out.println("Задачи:");
         for (Task task : managerSave.getTasksList()) {
@@ -284,7 +285,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
         managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone,7,
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 7,
                 "17.02.2025-11:30", 30));
 
         System.out.println("Задачи:");

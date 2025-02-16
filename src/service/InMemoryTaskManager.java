@@ -7,10 +7,12 @@ import model.TaskStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
@@ -31,6 +33,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasks = new HashMap<>();
         this.nextId = 1;
         this.historyManager = Managers.getDefaultHistory();
+
     }
 
     protected void setNextId(int nextId) {
@@ -57,12 +60,31 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    // метод, возвращающий список задач и подзадач в заданном порядке.
+    // для хранения остортированных данных метод добавляет остортированный списко в поле типа TreeSet,
+    // сохраняющий уже отсоритированные данные
+    public Set<Task> getPrioritizedTasks() {
+        List<Task> prioritzedTasksList = new ArrayList<>();
+        prioritzedTasksList.addAll(getTasksList());
+        prioritzedTasksList.addAll(getSubTasksList());
+        Set<Task> prioritizedTasksSet =
+                new TreeSet<>((t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
+
+        prioritizedTasksSet.addAll(prioritzedTasksList.stream()
+//                .filter(task -> task.getStartTime() != null)
+                .filter(Task::isStartTimeValid)
+                .toList());
+
+        return prioritizedTasksSet;
+    }
+
+
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
     @Override
     public List<Task> getTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Task
-        ArrayList<Task> tasksList = new ArrayList<>();
+        List<Task> tasksList = new ArrayList<>();
         for (Integer i : tasks.keySet()) {
             tasksList.add(tasks.get(i));
         }
@@ -72,7 +94,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа SubTask
-        ArrayList<Subtask> subTasksList = new ArrayList<>();
+        List<Subtask> subTasksList = new ArrayList<>();
         for (Integer i : subTasks.keySet()) {
             subTasksList.add(subTasks.get(i));
         }
@@ -82,7 +104,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Epic> getEpicsList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Epic
-        ArrayList<Epic> epicsList = new ArrayList<>();
+        List<Epic> epicsList = new ArrayList<>();
         for (Integer i : epics.keySet()) {
             epicsList.add(epics.get(i));
         }
@@ -300,24 +322,16 @@ public class InMemoryTaskManager implements TaskManager {
                     // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
                     epic.setStatus(TaskStatus.IN_PROGRESS);
                 }
-
-                //TODO расчет полей startTime, endTime и duration - переписать все в потоке
-
                 // определяем самый ранний старт подзадачи
                 if (subtask.getStartTime().isBefore(startTime)) startTime = subtask.getStartTime();
                 // определяем самое позднее завершение подзадачи
                 if (subtask.getEndTime().isAfter(endTime)) endTime = subtask.getEndTime();
-
             }
             // передаем параметры начала, завершения и продолжительности в поля эпика
             epic.setStartTime(startTime);
             epic.setEndTime(endTime);
-            Duration duration = Duration.between(startTime,endTime);
+            Duration duration = Duration.between(startTime, endTime);
             epic.setDuration(duration.toMinutes());
         }
-
     }
-
-
-
 }
