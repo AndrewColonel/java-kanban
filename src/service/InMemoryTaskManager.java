@@ -8,6 +8,7 @@ import model.TaskStatus;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
@@ -40,31 +41,53 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Task
-        List<Task> tasksList = new ArrayList<>();
-        for (Integer i : tasks.keySet()) {
-            tasksList.add(tasks.get(i));
-        }
-        return tasksList;
+//        List<Task> tasksList = new ArrayList<>();
+//        for (Integer i : tasks.keySet()) {
+//            tasksList.add(tasks.get(i));
+//        }
+//        return tasksList;
+
+        // использую Stream API - есть источник потока данных, есть преобразование
+        // и сбор результата в новую структуру данных
+        // код при этом упрощяется
+        return tasks.keySet().stream()
+                .map(tasks::get)
+                .toList();
     }
 
     @Override
     public List<Subtask> getSubTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа SubTask
-        List<Subtask> subTasksList = new ArrayList<>();
-        for (Integer i : subTasks.keySet()) {
-            subTasksList.add(subTasks.get(i));
-        }
-        return subTasksList;
+//        List<Subtask> subTasksList = new ArrayList<>();
+//        for (Integer i : subTasks.keySet()) {
+//            subTasksList.add(subTasks.get(i));
+//        }
+//        return subTasksList;
+
+        // использую Stream API - есть источник потока данных, есть преобразование
+        // и сбор результата в новую структуру данных
+        // код при этом упрощяется
+        return subTasks.keySet().stream()
+                .map(subTasks::get)
+                .toList();
     }
 
     @Override
     public List<Epic> getEpicsList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Epic
-        List<Epic> epicsList = new ArrayList<>();
-        for (Integer i : epics.keySet()) {
-            epicsList.add(epics.get(i));
-        }
-        return epicsList;
+//        List<Epic> epicsList = new ArrayList<>();
+//        for (Integer i : epics.keySet()) {
+//            epicsList.add(epics.get(i));
+//        }
+//        return epicsList;
+
+        // использую Stream API - есть источник потока данных, есть преобразование
+        // и сбор результата в новую структуру данных
+        // код при этом упрощяется
+        return epics.keySet().stream()
+                .map(epics::get)
+                .toList();
+
     }
 
     //б. Удаление всех задач
@@ -128,6 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicByID(int id) {
+        // Эпик с пустым списком подзадач будет напечатан
         Epic epic = epics.get(id);
         historyManager.add(epic);
         return epic;
@@ -248,60 +272,62 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubTasksListByEpic(int epicId) {
         //сигнатуру метода нужно сделать такой public ArrayList<SubTask> getSubTasksList (int epicId)
-        List<Subtask> subTaskList = new ArrayList<>();
-        if (epics.containsKey(epicId)) {
-            Epic epic = epics.get(epicId);
-            for (Integer subTasksID : epic.getSubTasksIDs()) {
-                Subtask subtask = subTasks.get(subTasksID);
-                subTaskList.add(subtask);
-            }
-        }
-        return subTaskList;
+//        List<Subtask> subTaskList = new ArrayList<>();
+//        if (epics.containsKey(epicId)) {
+//            Epic epic = epics.get(epicId);
+//            for (Integer subTasksID : epic.getSubTasksIDs()) {
+//                Subtask subtask = subTasks.get(subTasksID);
+//                subTaskList.add(subtask);
+//            }
+//        }
+//        return subTaskList;
+        return epics.get(epicId).getSubTasksIDs().stream()
+                .filter(Objects::nonNull)
+                .map(subTasks::get)
+                .collect(Collectors.toList());
     }
 
-    // метод расчета статуса эпика в зависимости от статусов подзадач
+//Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
+// сохраняю компаратор задач по дате начала в переменную  taskCompareByDate для повторного использования
+Comparator<Task> taskCompareByDate = Comparator.comparing(Task::getStartTime);
+
     private void calculateEpicParams(Epic epic) {
         // метод не должен быть публичным, так как является частью реализации
         // и не должен быть виден или доступен для внешних потребителей
         if (epic != null) { //если такой эпик нашелся
-            int countNew = 0;
-            int countDone = 0;
-//TODO Stream API
-            LocalDateTime startTime = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
-            LocalDateTime endTime = LocalDateTime.of(0, 1, 1, 0, 0, 0);
-
-            epic.setStatus(TaskStatus.NEW);
-            List<Integer> subTasksIDs = epic.getSubTasksIDs(); // вытаскиваем список подзадач данного эпика
-            for (Integer i : subTasksIDs) { //перебираем этот список подзадач
-                Subtask subtask = subTasks.get(i); //вытаскиваем каждую подзадачу
-                switch (subtask.getStatus()) { // проверяем статус каждой подзадачи
-                    case NEW:
-                        countNew++; //считаем кол-во подзадач со статусом NEW
-                        break;
-                    case DONE:
-                        countDone++;//считаем кол-во подзадач со статусом DONE
-                        break;
-                    default:
-                        break;
-                }
-                if (countNew == subTasksIDs.size()) { // если все задачи в списке NEW, статус эпика - NEW
-                    epic.setStatus(TaskStatus.NEW);
-                } else if (countDone == subTasksIDs.size()) { // если все задачи в списке DONE, статус эпика - DONE
-                    epic.setStatus(TaskStatus.DONE);
-                } else {
-                    // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
-                    epic.setStatus(TaskStatus.IN_PROGRESS);
-                }
-                // определяем самый ранний старт подзадачи
-                if (subtask.getStartTime().isBefore(startTime)) startTime = subtask.getStartTime();
-                // определяем самое позднее завершение подзадачи
-                if (subtask.getEndTime().isAfter(endTime)) endTime = subtask.getEndTime();
+            LocalDateTime startTime = LocalDateTime.now();
+            LocalDateTime endTime = LocalDateTime.now();
+            // с помощью потока собираю отсортированный по дате начала список subtasks
+            List<Subtask> collectedSubTasksList =
+                    epic.getSubTasksIDs().stream()
+                            .map(subTasks::get)
+                            .sorted(taskCompareByDate)
+                            .toList();
+            // считаем количество статусов NEW
+            long countNew = collectedSubTasksList.stream()
+                    .filter(subtask -> subtask.getStatus() == TaskStatus.NEW)
+                    .count();
+            // считаем количество статусов DONE
+            long countDone = collectedSubTasksList.stream()
+                    .filter(subtask -> subtask.getStatus() == TaskStatus.DONE)
+                    .count();
+            if (countNew == collectedSubTasksList.size()) { // если все задачи в списке NEW, статус эпика - NEW
+                epic.setStatus(TaskStatus.NEW);
+            } else if (countDone == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
+                epic.setStatus(TaskStatus.DONE);
+            } else {
+                // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
+                epic.setStatus(TaskStatus.IN_PROGRESS);
             }
-            // передаем параметры начала, завершения и продолжительности в поля эпика
+            // передаем дату и время  начала и завершения,
+            // первой и последней позадачи соотвесвенно в отсортированном списке в поля эпика
+            if (!collectedSubTasksList.isEmpty()) {
+                startTime = collectedSubTasksList.getFirst().getStartTime();
+                endTime = collectedSubTasksList.getLast().getEndTime();
+            }
             epic.setStartTime(startTime);
             epic.setEndTime(endTime);
-            Duration duration = Duration.between(startTime, endTime);
-            epic.setDuration(duration.toMinutes());
+            epic.setDuration(Duration.between(startTime, endTime).toMinutes());
         }
     }
 
@@ -316,7 +342,6 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(task.getId(), task);
         }
         //восстанавливаем внутренний список эпиков и их статусы
-        //TODO Stream API
         for (Subtask subtask : subTasks.values()) {
             Epic epic = epics.get((subtask.getEpicID()));
             if (epic != null) {
@@ -331,20 +356,23 @@ public class InMemoryTaskManager implements TaskManager {
     // сохраняющий уже отсоритированные данные
     public Set<Task> getPrioritizedTasks() {
         List<Task> prioritzedTasksList = new ArrayList<>();
+        //собираем все задачи и подзадачи в один список
         prioritzedTasksList.addAll(getTasksList());
         prioritzedTasksList.addAll(getSubTasksList());
+        // готовим множество уже с компаратором
         Set<Task> prioritizedTasksSet =
-                new TreeSet<>((t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
-
+                new TreeSet<>(taskCompareByDate);
         prioritizedTasksSet.addAll(prioritzedTasksList.stream()
-//                .filter(task -> task.getStartTime() != null)
+                // создаем поток и проверяю, что поле startTime заполнено
                 .filter(Task::isStartTimeValid)
                 .toList());
-
         return prioritizedTasksSet;
     }
 
     public Boolean isOverlapsed(Task task) {
+        // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
+        // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи
+        // Если хотя бы один элемент удовлетворяет предикату, возвращается true, иначе — false
         return getPrioritizedTasks().stream()
                 .anyMatch((pt) ->
                         (task.getStartTime().isAfter(pt.getStartTime())

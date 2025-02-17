@@ -25,7 +25,7 @@ public class Main {
         manager.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         manager.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusNew, 3,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 3,
                 "10.01.2025-17:00", 60));
         manager.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3,

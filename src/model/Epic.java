@@ -47,7 +47,7 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
-    //в этот класс нужно добавить три метода
+    // в этот класс нужно добавить три метода
     // 1) удалит единичную подзадачу из хранилища subTasksIDs
     public void delSubTaskID(Integer id) {
         subTasksIDs.remove(id);
@@ -67,8 +67,8 @@ public class Epic extends Task {
         }
     }
 
-    //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
-    //классе отдельно
+    // переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
+    // классе отдельно
     @Override
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s,", getId(),

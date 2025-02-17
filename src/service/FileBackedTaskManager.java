@@ -8,6 +8,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     // компаратор с использованием лямбда-функции для сортировки списка задач на восстановление по id
-//    Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
+    // Comparator<Task> taskCompareByID = (o1, o2) -> (o1.getId() - o2.getId());
 
     private void load(File file) {
         // метод выполняет загрузку считанных из файла перечня задач разных типов в память
@@ -73,8 +74,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Благодаря этому можно не менять сигнатуру методов интерфейса менеджера.
             throw new ManagerLoadException("Произошла ошибка во время чтения файла.");
         }
-        taskList.sort((o1, o2) -> (o1.getId() - o2.getId()));
-        // после сортировки последний выданный счетчиком id принадлежит крайнему элементу
+        taskList.sort(Comparator.comparingInt(Task::getId));
+        // после сортировки лямбда - (o1, o2) -> (o1.getId() - o2.getId())
+        // последний выданный счетчиком id принадлежит крайнему элементу
         // необходимо для продолжения корректной работы счетчика менеджера установить
         // следующее за крайним id стартовое значение счетчика, т.е. LastID+1
         // для восстановления "памяти" и счетчика (private поля класса InMemmoryTaskManage)
@@ -239,7 +241,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30));
 
         managerSave.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusInProgress, 1,
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 1,
                 "10.01.2025-17:00", 60));
         managerSave.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1,
@@ -321,8 +323,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (!(task instanceof Epic))
                 System.out.printf("%110s--> пересечение: %s \n",
                         task, managerLoad.isOverlapsed(task));
-
         }
-
     }
 }
