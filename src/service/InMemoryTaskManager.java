@@ -266,7 +266,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) { //если такой эпик нашелся
             int countNew = 0;
             int countDone = 0;
-
+//TODO Stream API
             LocalDateTime startTime = LocalDateTime.of(3000, 1, 1, 0, 0, 0);
             LocalDateTime endTime = LocalDateTime.of(0, 1, 1, 0, 0, 0);
 
@@ -316,6 +316,7 @@ public class InMemoryTaskManager implements TaskManager {
             tasks.put(task.getId(), task);
         }
         //восстанавливаем внутренний список эпиков и их статусы
+        //TODO Stream API
         for (Subtask subtask : subTasks.values()) {
             Epic epic = epics.get((subtask.getEpicID()));
             if (epic != null) {
@@ -344,14 +345,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public Boolean isOverlapsed(Task task) {
-        for (Task pt : getPrioritizedTasks()) {
-            LocalDateTime ptStart = pt.getStartTime();
-            LocalDateTime taskStart = task.getStartTime();
-            LocalDateTime ptEnd = pt.getStartTime().plusMinutes(pt.getDuration()); // расчет конца такска
-            LocalDateTime taskEnd = task.getStartTime().plusMinutes(task.getDuration());
-            if (taskStart.isAfter(ptStart) && (taskStart.isBefore(ptEnd))) return true;
-            if (taskEnd.isAfter(ptStart) && (taskEnd.isBefore(ptEnd))) return true;
-        }
-        return false;
+        return getPrioritizedTasks().stream()
+                .anyMatch((pt) ->
+                        (task.getStartTime().isAfter(pt.getStartTime())
+                                && (task.getStartTime().isBefore(pt.getEndTime())))
+                                || (task.getEndTime().isAfter(pt.getStartTime())
+                                && (task.getEndTime().isBefore(pt.getEndTime()))));
     }
 }
