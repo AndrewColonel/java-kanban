@@ -243,7 +243,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "10.01.2025-17:00", 60));
         managerSave.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1,
-                "10.01.2025-17:55", 5));
+                "10.01.2025-16:55", 20));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
                 "15.02.2025-10:00", 1000));
@@ -280,7 +280,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
         // загрузка данных для восстановления работы менеджера из файла
-        TaskManager managerLoad =
+//        TaskManager managerLoad =
+//                FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
+
+        FileBackedTaskManager managerLoad =
                 FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
 
         managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
@@ -292,6 +295,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (Task task : managerLoad.getTasksList()) {
 //            System.out.println(task);
             System.out.println(managerLoad.getTaskByID(task.getId()));
+
         }
 
         System.out.println("Эпики:");
@@ -308,5 +312,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (Task task : managerLoad.getHistory()) {
             System.out.println(task);
         }
+        System.out.println("\n\n Отсортированный список:");
+        for (Task prioritizedTask : managerLoad.getPrioritizedTasks()) {
+            System.out.printf("%110s \n", prioritizedTask);
+        }
+        System.out.println("\n Пересечения временных отрезков:");
+        for (Task task : managerLoad.getHistory()) {
+            if (!(task instanceof Epic))
+                System.out.printf("%110s--> пересечение: %s \n",
+                        task, managerLoad.isOverlapsed(task));
+
+        }
+
     }
 }

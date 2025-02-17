@@ -9,11 +9,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import java.util.Comparator;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-
 public class InMemoryTaskManager implements TaskManager {
     // поля класса - коллекции HashMap для организации хранения задач всех типов - model.Task, SubTask, model.Epic
     // хранилища не должны быть доступны извне класса, поэтому нужен модификатор private
@@ -39,45 +34,6 @@ public class InMemoryTaskManager implements TaskManager {
     protected void setNextId(int nextId) {
         this.nextId = nextId;
     }
-
-    protected void recovery(Task task) {
-        // метод восстановления в "память" менеджера задач из файла
-        // считаем что "память" в файл сохранилась корректно и потерянных эпиков и подзадач нет
-        if (task instanceof Subtask subtask) {
-            subTasks.put(subtask.getId(), subtask);
-        } else if (task instanceof Epic epic) {
-            epics.put(epic.getId(), epic);
-        } else {
-            tasks.put(task.getId(), task);
-        }
-        //восстанавливаем внутренний список эпиков и их статусы
-        for (Subtask subtask : subTasks.values()) {
-            Epic epic = epics.get((subtask.getEpicID()));
-            if (epic != null) {
-                epic.addSubTaskID(subtask.getId());
-                calculateEpicParams(epic);
-            }
-        }
-    }
-
-    // метод, возвращающий список задач и подзадач в заданном порядке.
-    // для хранения остортированных данных метод добавляет остортированный списко в поле типа TreeSet,
-    // сохраняющий уже отсоритированные данные
-    public Set<Task> getPrioritizedTasks() {
-        List<Task> prioritzedTasksList = new ArrayList<>();
-        prioritzedTasksList.addAll(getTasksList());
-        prioritzedTasksList.addAll(getSubTasksList());
-        Set<Task> prioritizedTasksSet =
-                new TreeSet<>((t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
-
-        prioritizedTasksSet.addAll(prioritzedTasksList.stream()
-//                .filter(task -> task.getStartTime() != null)
-                .filter(Task::isStartTimeValid)
-                .toList());
-
-        return prioritizedTasksSet;
-    }
-
 
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
     //а. Получение списка всех задач.
@@ -180,18 +136,26 @@ public class InMemoryTaskManager implements TaskManager {
     // d. Создание задачи. Объект передается в качестве параметра.
     @Override
     public void add(Task task) {
+        // если временной отрезок задачи не пересекается с остальными задачами
+        if (isOverlapsed(task)) return;
+
         task.setId(nextId++);
         tasks.put(task.getId(), task);
+
     }
 
     @Override
     public void add(Subtask subtask) {
+        // если временной отрезок задачи не пересекается с остальными задачами
+        if (isOverlapsed(subtask)) return;
+
         if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи эпик нашелся
             subtask.setId(nextId++); // то подзадача получает id
             subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
             Epic epic = epics.get(subtask.getEpicID()); //вытаскиваем необходимый эпик для добавления подзадачи
             epic.addSubTaskID(subtask.getId()); // и добавляется в список эпика
             calculateEpicParams(epic); // добавилась новая подзадача, рассчитаем статус эпика
+
         }
     }
 
@@ -205,6 +169,9 @@ public class InMemoryTaskManager implements TaskManager {
     //e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
     @Override
     public void update(Task task) {
+        // если временной отрезок задачи не пересекается с остальными задачами
+        if (isOverlapsed(task)) return;
+
         // обновляется только та задача, которая ранее была в tasks
         if (tasks.containsKey(task.getId())) {
             tasks.put(task.getId(), task);
@@ -213,6 +180,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void update(Subtask subtask) {
+        // если временной отрезок задачи не пересекается с остальными задачами
+        if (isOverlapsed(subtask)) return;
+
         // проверяем есть ли такая подзадача, не существующую подзадачу не обновляем
         if (subTasks.containsKey(subtask.getId())) {
             Subtask updatedSubTask = subTasks.get(subtask.getId());
@@ -333,5 +303,55 @@ public class InMemoryTaskManager implements TaskManager {
             Duration duration = Duration.between(startTime, endTime);
             epic.setDuration(duration.toMinutes());
         }
+    }
+
+    protected void recovery(Task task) {
+        // метод восстановления в "память" менеджера задач из файла
+        // считаем что "память" в файл сохранилась корректно и потерянных эпиков и подзадач нет
+        if (task instanceof Subtask subtask) {
+            subTasks.put(subtask.getId(), subtask);
+        } else if (task instanceof Epic epic) {
+            epics.put(epic.getId(), epic);
+        } else {
+            tasks.put(task.getId(), task);
+        }
+        //восстанавливаем внутренний список эпиков и их статусы
+        for (Subtask subtask : subTasks.values()) {
+            Epic epic = epics.get((subtask.getEpicID()));
+            if (epic != null) {
+                epic.addSubTaskID(subtask.getId());
+                calculateEpicParams(epic);
+            }
+        }
+    }
+
+    // метод, возвращающий список задач и подзадач в заданном порядке.
+    // для хранения остортированных данных метод добавляет остортированный списко в поле типа TreeSet,
+    // сохраняющий уже отсоритированные данные
+    public Set<Task> getPrioritizedTasks() {
+        List<Task> prioritzedTasksList = new ArrayList<>();
+        prioritzedTasksList.addAll(getTasksList());
+        prioritzedTasksList.addAll(getSubTasksList());
+        Set<Task> prioritizedTasksSet =
+                new TreeSet<>((t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
+
+        prioritizedTasksSet.addAll(prioritzedTasksList.stream()
+//                .filter(task -> task.getStartTime() != null)
+                .filter(Task::isStartTimeValid)
+                .toList());
+
+        return prioritizedTasksSet;
+    }
+
+    public Boolean isOverlapsed(Task task) {
+        for (Task pt : getPrioritizedTasks()) {
+            LocalDateTime ptStart = pt.getStartTime();
+            LocalDateTime taskStart = task.getStartTime();
+            LocalDateTime ptEnd = pt.getStartTime().plusMinutes(pt.getDuration()); // расчет конца такска
+            LocalDateTime taskEnd = task.getStartTime().plusMinutes(task.getDuration());
+            if (taskStart.isAfter(ptStart) && (taskStart.isBefore(ptEnd))) return true;
+            if (taskEnd.isAfter(ptStart) && (taskEnd.isBefore(ptEnd))) return true;
+        }
+        return false;
     }
 }
