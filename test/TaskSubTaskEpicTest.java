@@ -5,49 +5,14 @@
 
 import model.*;
 import org.junit.jupiter.api.*;
-import service.Managers;
-import service.TaskManager;
+import service.*;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class TaskSubTaskEpicTest {
-
-    static TaskStatus statusNew;
-    static TaskStatus statusInProgress;
-    static TaskStatus statusDone;
-    static TaskManager manager;
-    static Task task1;
-    static Task task2;
-    static Epic epic1;
-    static Epic epic2;
-    static Subtask subTask1;
-    static Subtask subTask2;
-    static Subtask subTask3;
-
-
-    @BeforeAll
-    static void setUp() {
-        statusNew = TaskStatus.NEW;
-        statusInProgress = TaskStatus.IN_PROGRESS;
-        statusDone = TaskStatus.DONE;
-        manager = Managers.getDefault();
-
-        task1 = new Task("Тест создания Таск 1",
-                "описание Таск 1", statusNew);
-        task2 = new Task("Тест создания Таск 2", 1,
-                "описание Таск 2", statusNew);
-
-        epic1 = new Epic("Тест создания Эпик 1", "Это задача -Эпик 1");
-        epic2 = new Epic("Тест создания Эпик 2", 1, "Это задача -Эпик 2");
-
-        subTask1 = new Subtask("Тест создания Подзадачи 1",
-                "Это подзадача для Эпика", statusNew, 3);
-        subTask2 = new Subtask("Тест создания Подзадачи 2",
-                "Это подзадача для Эпика", statusNew, 3);
-        subTask3 = new Subtask("Тест создания Подзадачи 3", 0,
-                "Это подзадача для Эпика", statusNew, 4);
-
-    }
+class TaskSubTaskEpicTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void taskShouldBeEqualsByID() { //проверяем, что экземпляры класса model.Task равны друг другу, если равен их id;
@@ -113,5 +78,133 @@ class TaskSubTaskEpicTest {
         Node<Task> nodeSubTask1 = new Node<>(subTask1);
         assertEquals(nodeTask1, nodeTask2, "Узлы не совпадают");
         assertNotEquals(nodeTask1, nodeSubTask1, "Узлы совпадают");
+    }
+
+    @Test
+    void subTaskTest() {
+        // Для подзадач необходимо дополнительно убедиться в наличии связанного эпика.
+        // epic -> subTaskId -> subTask -> epicId -> epic - assertEqual
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(epic1);
+        manager.add(epic2);
+        manager.add(subTask1);
+        manager.add(subTask2);
+        manager.add(subTask3);
+        assertEquals(manager.getEpicsList().getFirst().getId(),
+                manager.getSubTaskByID(
+                        manager.getEpicsList().getFirst()
+                                .getSubTasksIDs().getFirst()).getEpicID(),
+                "Эти два Эпика не равны");
+    }
+
+    @Test
+    void epicTest() {
+        // Для эпиков нужно проверить корректность расчёта статуса на основании состояния подзадач.
+        manager.add(task1);
+        manager.add(task2);
+        manager.add(epic1);
+        manager.add(epic2);
+        manager.add(subTask1);
+        manager.add(subTask2);
+        manager.add(subTask3);
+
+        // нахожу эпик, содержащий более чем 1 subtask
+        manager.getEpicsList().stream()
+                .filter(e -> e.getSubTasksIDs().size() > 1)
+                .findFirst() // поиск первого же эпика, имеющего более 1 подзадачи
+                .ifPresent(epic ->
+                {
+                    //все subtask - со статусом NEW
+                    manager.getSubTasksListByEpic(epic.getId())
+                            .forEach(subtask -> subtask.setStatus(TaskStatus.NEW));
+                    manager.update(epic);
+                    assertEquals(epic.getStatus(), TaskStatus.NEW,
+                            "Статус не равен NEW");
+
+                    //все subtask - со статусом DONE
+                    manager.getSubTasksListByEpic(epic.getId())
+                            .forEach(subtask -> subtask.setStatus(TaskStatus.DONE));
+                    manager.update(epic);
+                    assertEquals(epic.getStatus(), TaskStatus.DONE,
+                            "Статус не равен DONE");
+
+                    //все subtask - со статусом INPROGRESS
+                    manager.getSubTasksListByEpic(epic.getId())
+                            .forEach(subtask -> subtask.setStatus(TaskStatus.IN_PROGRESS));
+                    manager.update(epic);
+                    assertEquals(epic.getStatus(), TaskStatus.IN_PROGRESS,
+                            "Статус не равен INPROGRESS когда все sabtask INPROGRESS");
+
+                    //один subtask - со статусом NEW, другой DONE
+                    manager.getSubTasksListByEpic(epic.getId()).getFirst().setStatus(TaskStatus.NEW);
+                    manager.getSubTasksListByEpic(epic.getId()).getLast().setStatus(TaskStatus.DONE);
+                    manager.update(epic);
+                    assertEquals(epic.getStatus(), TaskStatus.IN_PROGRESS,
+                            "Статус не равен INPROGRESS");
+                });
+    }
+
+    @Test
+    void overlapTest() {
+        // Убедиться, что реализован корректный расчёт пересечения временных интервалов задач,
+        // чтобы предотвратить конфликтные ситуации.
+
+        // нахожу эпик, содержащий более чем 1 subtask
+        manager.getEpicsList().stream()
+                .filter(e -> e.getSubTasksIDs().size() > 1)
+                .findFirst() // поиск первого же эпика, имеющего более 1 подзадачи
+                .ifPresent(epic -> {
+                            //Установлены олинаковые время старта и продолжительсность
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setStartTime(LocalDateTime.now());
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setDuration(60L);
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setStartTime(LocalDateTime.now());
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setDuration(60L);
+                            assertTrue(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getFirst()),
+                                    "Интервалы не пересекаются");
+                            assertTrue(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getLast()),
+                                    "Интервалы не пересекаются");
+
+                            //интервалы у двух событий точно не пересекаются
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setStartTime(LocalDateTime.now());
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setDuration(60L);
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setStartTime(LocalDateTime.now().plusMinutes(100));
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setDuration(60L);
+                            assertFalse(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getFirst()),
+                                    "Интервалы пересекаются");
+                            assertFalse(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getLast()),
+                                    "Интервалы пересекаются");
+
+                            //Установлены пересекающиеся интервалы
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setStartTime(LocalDateTime.now());
+                            manager.getSubTasksListByEpic(epic.getId()).getFirst()
+                                    .setDuration(60L);
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setStartTime(LocalDateTime.now().plusMinutes(30));
+                            manager.getSubTasksListByEpic(epic.getId()).getLast()
+                                    .setDuration(60L);
+                            assertTrue(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getFirst()),
+                                    "Интервалы не пересекаются");
+                            assertTrue(manager.isOverlapsed(
+                                            manager.getSubTasksListByEpic(epic.getId()).getLast()),
+                                    "Интервалы не пересекаются");
+                        }
+                );
+
+
     }
 }

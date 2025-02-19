@@ -282,9 +282,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
         // загрузка данных для восстановления работы менеджера из файла
-//        TaskManager managerLoad =
-//                FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
-
         FileBackedTaskManager managerLoad =
                 FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
 

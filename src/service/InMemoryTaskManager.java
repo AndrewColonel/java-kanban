@@ -41,12 +41,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Task
-//        List<Task> tasksList = new ArrayList<>();
-//        for (Integer i : tasks.keySet()) {
-//            tasksList.add(tasks.get(i));
-//        }
-//        return tasksList;
-
         // использую Stream API - есть источник потока данных, есть преобразование
         // и сбор результата в новую структуру данных
         // код при этом упрощяется
@@ -58,15 +52,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubTasksList() {
         //Метод должен возвращать список, т.е. ArrayList типа SubTask
-//        List<Subtask> subTasksList = new ArrayList<>();
-//        for (Integer i : subTasks.keySet()) {
-//            subTasksList.add(subTasks.get(i));
-//        }
-//        return subTasksList;
-
-        // использую Stream API - есть источник потока данных, есть преобразование
-        // и сбор результата в новую структуру данных
-        // код при этом упрощяется
         return subTasks.keySet().stream()
                 .map(subTasks::get)
                 .toList();
@@ -75,12 +60,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Epic> getEpicsList() {
         //Метод должен возвращать список, т.е. ArrayList типа model.Epic
-//        List<Epic> epicsList = new ArrayList<>();
-//        for (Integer i : epics.keySet()) {
-//            epicsList.add(epics.get(i));
-//        }
-//        return epicsList;
-
         // использую Stream API - есть источник потока данных, есть преобразование
         // и сбор результата в новую структуру данных
         // код при этом упрощяется
@@ -223,16 +202,14 @@ public class InMemoryTaskManager implements TaskManager {
     public void update(Epic epic) {
         //Метод может обновить всего два поля: name и description, при этом эпик остается прежним, как объект в памяти,
         // в отличие от задач и подзадач
-        // Поэтому можно выполнить обертку эпика и замену его в списке-хранилище
         if (epics.containsKey(epic.getId())) { //обновляем только существующий эпик
             Epic updatedEpic = epics.get(epic.getId());
-            Epic newEpic = new Epic(updatedEpic); //оборачиваем полученный эпик
-            newEpic.setName(epic.getName());
-            newEpic.setDescription(epic.getDescription());
-            epics.put(epic.getId(), newEpic); //полностью новый эпик в хранилище
+            updatedEpic.setName(epic.getName());
+            updatedEpic.setDescription(epic.getDescription());
+            calculateEpicParams(updatedEpic);
+            epics.put(epic.getId(), updatedEpic);
         }
     }
-
 
     //f. Удаление по идентификатору.
     @Override
@@ -271,25 +248,15 @@ public class InMemoryTaskManager implements TaskManager {
     //Дополнительные методы - получение списка всех подзадач определённого эпика
     @Override
     public List<Subtask> getSubTasksListByEpic(int epicId) {
-        //сигнатуру метода нужно сделать такой public ArrayList<SubTask> getSubTasksList (int epicId)
-//        List<Subtask> subTaskList = new ArrayList<>();
-//        if (epics.containsKey(epicId)) {
-//            Epic epic = epics.get(epicId);
-//            for (Integer subTasksID : epic.getSubTasksIDs()) {
-//                Subtask subtask = subTasks.get(subTasksID);
-//                subTaskList.add(subtask);
-//            }
-//        }
-//        return subTaskList;
         return epics.get(epicId).getSubTasksIDs().stream()
                 .filter(Objects::nonNull)
                 .map(subTasks::get)
                 .collect(Collectors.toList());
     }
 
-//Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
+    //Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
 // сохраняю компаратор задач по дате начала в переменную  taskCompareByDate для повторного использования
-Comparator<Task> taskCompareByDate = Comparator.comparing(Task::getStartTime);
+    Comparator<Task> taskCompareByDate = Comparator.comparing(Task::getStartTime);
 
     private void calculateEpicParams(Epic epic) {
         // метод не должен быть публичным, так как является частью реализации
@@ -311,10 +278,16 @@ Comparator<Task> taskCompareByDate = Comparator.comparing(Task::getStartTime);
             long countDone = collectedSubTasksList.stream()
                     .filter(subtask -> subtask.getStatus() == TaskStatus.DONE)
                     .count();
+            // считаем количество статусов DONE
+            long countINPROGRESS = collectedSubTasksList.stream()
+                    .filter(subtask -> subtask.getStatus() == TaskStatus.IN_PROGRESS)
+                    .count();
             if (countNew == collectedSubTasksList.size()) { // если все задачи в списке NEW, статус эпика - NEW
                 epic.setStatus(TaskStatus.NEW);
             } else if (countDone == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
                 epic.setStatus(TaskStatus.DONE);
+            } else if (countINPROGRESS == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
+                epic.setStatus(TaskStatus.IN_PROGRESS);
             } else {
                 // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
                 epic.setStatus(TaskStatus.IN_PROGRESS);

@@ -136,7 +136,6 @@ public class Task {
                 getStartTime().format(dateTimeFormatter), getDuration());
     }
 
-
     //методы equals() и hashCode() будут переопределены в базовом классе и будут переданы всем наследникам
     //переопределяем метод для сравнения объектов (задач) - задачи с одинаковыми id будут считаться равными
     @Override
