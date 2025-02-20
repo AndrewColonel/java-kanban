@@ -206,7 +206,6 @@ public class InMemoryTaskManager implements TaskManager {
             Epic updatedEpic = epics.get(epic.getId());
             updatedEpic.setName(epic.getName());
             updatedEpic.setDescription(epic.getDescription());
-            calculateEpicParams(updatedEpic);
             epics.put(epic.getId(), updatedEpic);
         }
     }
@@ -262,8 +261,8 @@ public class InMemoryTaskManager implements TaskManager {
         // метод не должен быть публичным, так как является частью реализации
         // и не должен быть виден или доступен для внешних потребителей
         if (epic != null) { //если такой эпик нашелся
-            LocalDateTime startTime = LocalDateTime.now();
-            LocalDateTime endTime = LocalDateTime.now();
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
             // с помощью потока собираю отсортированный по дате начала список subtasks
             List<Subtask> collectedSubTasksList =
                     epic.getSubTasksIDs().stream()
@@ -278,16 +277,10 @@ public class InMemoryTaskManager implements TaskManager {
             long countDone = collectedSubTasksList.stream()
                     .filter(subtask -> subtask.getStatus() == TaskStatus.DONE)
                     .count();
-            // считаем количество статусов DONE
-            long countINPROGRESS = collectedSubTasksList.stream()
-                    .filter(subtask -> subtask.getStatus() == TaskStatus.IN_PROGRESS)
-                    .count();
             if (countNew == collectedSubTasksList.size()) { // если все задачи в списке NEW, статус эпика - NEW
                 epic.setStatus(TaskStatus.NEW);
             } else if (countDone == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
                 epic.setStatus(TaskStatus.DONE);
-            } else if (countINPROGRESS == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
-                epic.setStatus(TaskStatus.IN_PROGRESS);
             } else {
                 // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
                 epic.setStatus(TaskStatus.IN_PROGRESS);
