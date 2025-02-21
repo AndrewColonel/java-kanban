@@ -117,22 +117,29 @@ class TaskSubTaskEpicTest extends TaskManagerTest<InMemoryTaskManager> {
                 {
                     //все subtask - со статусом NEW
                     manager.getSubTasksListByEpic(epic.getId())
-                            .forEach(subtask -> subtask.setStatus(TaskStatus.NEW));
-                    manager.update(epic);
+                            .forEach(subtask -> {
+                                subtask.setStatus(TaskStatus.NEW);
+                                manager.update(subtask);
+                            });
+
                     assertEquals(epic.getStatus(), TaskStatus.NEW,
                             "Статус не равен NEW");
 
                     //все subtask - со статусом DONE
                     manager.getSubTasksListByEpic(epic.getId())
-                            .forEach(subtask -> subtask.setStatus(TaskStatus.DONE));
-                    manager.update(epic);
+                            .forEach(subtask -> {
+                                subtask.setStatus(TaskStatus.DONE);
+                                manager.update(subtask);
+                            });
                     assertEquals(epic.getStatus(), TaskStatus.DONE,
                             "Статус не равен DONE");
 
                     //все subtask - со статусом INPROGRESS
                     manager.getSubTasksListByEpic(epic.getId())
-                            .forEach(subtask -> subtask.setStatus(TaskStatus.IN_PROGRESS));
-                    manager.update(epic);
+                            .forEach(subtask -> {
+                                subtask.setStatus(TaskStatus.IN_PROGRESS);
+                                manager.update(subtask);
+                            });
                     assertEquals(epic.getStatus(), TaskStatus.IN_PROGRESS,
                             "Статус не равен INPROGRESS когда все sabtask INPROGRESS");
 

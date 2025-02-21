@@ -5,7 +5,6 @@ import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -264,22 +263,21 @@ public class InMemoryTaskManager implements TaskManager {
             LocalDateTime startTime = null;
             LocalDateTime endTime = null;
             // с помощью потока собираю отсортированный по дате начала список subtasks
-            List<Subtask> collectedSubTasksList =
+            List<Subtask> statusSubTasksList =
                     epic.getSubTasksIDs().stream()
                             .map(subTasks::get)
-                            .sorted(taskCompareByDate)
                             .toList();
             // считаем количество статусов NEW
-            long countNew = collectedSubTasksList.stream()
+            long countNew = statusSubTasksList.stream()
                     .filter(subtask -> subtask.getStatus() == TaskStatus.NEW)
                     .count();
             // считаем количество статусов DONE
-            long countDone = collectedSubTasksList.stream()
+            long countDone = statusSubTasksList.stream()
                     .filter(subtask -> subtask.getStatus() == TaskStatus.DONE)
                     .count();
-            if (countNew == collectedSubTasksList.size()) { // если все задачи в списке NEW, статус эпика - NEW
+            if (countNew == statusSubTasksList.size()) { // если все задачи в списке NEW, статус эпика - NEW
                 epic.setStatus(TaskStatus.NEW);
-            } else if (countDone == collectedSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
+            } else if (countDone == statusSubTasksList.size()) { // если все задачи в списке DONE, статус эпика - DONE
                 epic.setStatus(TaskStatus.DONE);
             } else {
                 // не все задачи в эпике имеют статус только NEW или DONE, эпик имеет статус - IN_PROGRESS
@@ -287,13 +285,20 @@ public class InMemoryTaskManager implements TaskManager {
             }
             // передаем дату и время  начала и завершения,
             // первой и последней позадачи соотвесвенно в отсортированном списке в поля эпика
-            if (!collectedSubTasksList.isEmpty()) {
-                startTime = collectedSubTasksList.getFirst().getStartTime();
-                endTime = collectedSubTasksList.getLast().getEndTime();
+            List<Subtask> timedSubTasksList =
+                    epic.getSubTasksIDs().stream()
+                            .map(subTasks::get)
+                            .filter(Task::isStartTimeValid)
+                            .filter(Task::isDurationValid)
+                            .sorted(taskCompareByDate)
+                            .toList();
+            if (!timedSubTasksList.isEmpty()) {
+                startTime = statusSubTasksList.getFirst().getStartTime();
+                endTime = statusSubTasksList.getLast().getEndTime();
             }
             epic.setStartTime(startTime);
             epic.setEndTime(endTime);
-            epic.setDuration(Duration.between(startTime, endTime).toMinutes());
+            epic.setDuration(timedSubTasksList.stream().mapToLong(Task::getDuration).sum());
         }
     }
 
@@ -339,11 +344,18 @@ public class InMemoryTaskManager implements TaskManager {
         // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
         // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи
         // Если хотя бы один элемент удовлетворяет предикату, возвращается true, иначе — false
-        return getPrioritizedTasks().stream()
-                .anyMatch((pt) ->
-                        (task.getStartTime().isAfter(pt.getStartTime())
-                                && (task.getStartTime().isBefore(pt.getEndTime())))
-                                || (task.getEndTime().isAfter(pt.getStartTime())
-                                && (task.getEndTime().isBefore(pt.getEndTime()))));
+        if (task.isStartTimeValid())
+            return getPrioritizedTasks().stream()
+                    // поскольку метод используется и при обновлении сущностей, нужно добавить фильтр по id,
+                    // чтобы не сравнивать между собой старую и новую версии
+                    .filter(pt -> task.getId() != pt.getId())
+                    .anyMatch((pt) ->
+                            (task.getStartTime().isAfter(pt.getStartTime())
+                                    && (task.getStartTime().isBefore(pt.getEndTime())))
+                                    || (task.getEndTime().isAfter(pt.getStartTime())
+                                    && (task.getEndTime().isBefore(pt.getEndTime())))
+                                    || (task.getStartTime().isBefore(pt.getStartTime())
+                                    && (task.getEndTime().isAfter(pt.getEndTime()))));
+        else return false;
     }
 }

@@ -27,7 +27,7 @@ public class Task {
     }
 
     //Конструктор для создания новых задач и подзадач
-    public Task(String name, String description, TaskStatus status, String startTime, int duration) {
+    public Task(String name, String description, TaskStatus status, String startTime, Long duration) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -36,13 +36,23 @@ public class Task {
     }
 
     //Конструктор для создания новых задач и подзадач
-    public Task(String name, int id, String description, TaskStatus status, String startTime, int duration) {
+    public Task(String name, int id, String description, TaskStatus status, String startTime, Long duration) {
         this.name = name;
         this.id = id;
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
         this.startTime = LocalDateTime.parse(startTime, dateTimeFormatter);
+    }
+
+    //Конструктор для создания новых задач и подзадач после восстановления из файла
+    public Task(String name, int id, String description, TaskStatus status, String startTime, String duration) {
+        this.name = name;
+        this.id = id;
+        this.description = description;
+        this.status = status;
+        this.duration = getParsedDuration(duration);
+        this.startTime = getParsedStartTime(startTime);
     }
 
     //конструктор для обновления существующих задач и подзадач
@@ -71,20 +81,52 @@ public class Task {
     }
 
     public Boolean isStartTimeValid() {
-        return (getStartTime() != null);
+        return (startTime != null);
+    }
+
+    public Boolean isEndTimeValid() {
+        return (getEndTime() != null);
+    }
+
+    public Boolean isDurationValid() {
+        return (duration != null);
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime != null) return startTime.plus(duration);
-        else return null;
+        if (isStartTimeValid() && isDurationValid()) return startTime.plus(duration);
+        return null;
     }
 
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    public String getFormattedStartTime() { // метод для корректного преобразования toString
+        if (isStartTimeValid()) return getStartTime().format(dateTimeFormatter);
+        return null;
+    }
+
+    public String getFormattedEndTime() { // метод для корректного преобразования toString
+        if (isEndTimeValid()) return getEndTime().format(dateTimeFormatter);
+        return null;
+    }
+
+    public LocalDateTime getParsedStartTime(String parsedStartTime) {
+        // метод для корректного парсинга значений null в объект LocalTimeDate
+        if (!parsedStartTime.equals("null")) return LocalDateTime.parse(parsedStartTime, dateTimeFormatter);
+        return null;
+    }
+
+    public Duration getParsedDuration(String parsedDuration) {
+        // метод для корректного парсинга значений null в  Long
+        if (!parsedDuration.equals("null"))
+            return Duration.ofMinutes(Long.parseLong(parsedDuration));
+    return null;
+    }
+
     public Long getDuration() {
-        return duration.toMinutes();
+        if (isDurationValid()) return duration.toMinutes();
+        return null;
     }
 
     public void setDuration(Long duration) {
@@ -134,7 +176,7 @@ public class Task {
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,", getId(),
                 TaskType.TASK, getName(), getStatus(), getDescription(),
-                getStartTime().format(dateTimeFormatter), getDuration());
+                getFormattedStartTime(), getDuration());
     }
 
     //методы equals() и hashCode() будут переопределены в базовом классе и будут переданы всем наследникам

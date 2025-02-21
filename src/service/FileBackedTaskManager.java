@@ -6,6 +6,7 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -99,7 +100,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     try {
                         return Optional.of(new Task(taskfields[2], (Integer.parseInt(taskfields[0])),
                                 taskfields[4], TaskStatus.valueOf(taskfields[3]),
-                                taskfields[5], Integer.parseInt(taskfields[6])));
+                                taskfields[5], taskfields[6]));
                     } catch (DateTimeParseException e) {
                         throw new ManagerLoadException("Произошла ошибка во время парсинга даты объекта TASK - "
                                 + e.getMessage());
@@ -115,7 +116,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         return Optional.of(new Subtask(taskfields[2], (Integer.parseInt(taskfields[0])),
                                 taskfields[4], TaskStatus.valueOf(taskfields[3]),
                                 Integer.parseInt(taskfields[5]), taskfields[6],
-                                (Integer.parseInt(taskfields[7]))));
+                                taskfields[7]));
                     } catch (DateTimeParseException e) {
                         throw new ManagerLoadException("Произошла ошибка во время парсинга даты объекта SUBTASK - "
                                 + e.getMessage());
@@ -235,20 +236,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         managerSave.add(new Epic("Переезд", "Это задача -Эпик №1"));
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
+
         managerSave.add(new Task("написать cписок дел",
-                "простая-обычная-задача", statusNew, "10.10.2026-00:00", 10));
+                "простая-обычная-задача", statusNew, "10.10.2026-00:00", 10L));
+
         managerSave.add(new Task("погулять с собакой еще раз",
-                "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30));
+                "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30L));
 
         managerSave.add(new Subtask("упаковать коробки",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 1,
-                "10.01.2025-17:00", 60));
+                "10.01.2025-17:00", 60L));
         managerSave.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1,
-                "10.01.2025-16:55", 20));
+                "10.01.2025-16:55", 20L));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
-                "15.02.2025-10:00", 1000));
+                "15.02.2025-10:00", 1000L));
 
         managerSave.delTaskByID(4);
         managerSave.delEpicByID(2);
@@ -288,7 +291,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
         managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 7,
-                "17.02.2025-11:30", 30));
+                "17.02.2025-11:30", 30L));
 
         System.out.println("Задачи:");
         for (Task task : managerLoad.getTasksList()) {

@@ -73,6 +73,6 @@ public class Epic extends Task {
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s,", getId(),
                 TaskType.EPIC, getName(), getStatus(),getDescription(),
-                getStartTime().format(dateTimeFormatter),getEndTime().format(dateTimeFormatter),getDuration());
+                getFormattedStartTime(),getFormattedEndTime(),getDuration());
     }
 }

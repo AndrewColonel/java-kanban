@@ -73,19 +73,19 @@ class FileBackedTaskManagerTest {
         managerSave.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         managerSave.add(new Task("написать cписок дел",
-                "простая-обычная-задача", statusNew, "10.10.2026-00:00", 10));
+                "простая-обычная-задача", statusNew, "10.10.2026-00:00", 10L));
         managerSave.add(new Task("погулять с собакой еще раз",
-                "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30));
+                "простая-обычная-задача", statusNew, "10.10.2024-09:00", 30L));
 
         managerSave.add(new Subtask("упаковать коробки",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 1,
-                "10.01.2025-17:00", 60));
+                "10.01.2025-17:00", 60L));
         managerSave.add(new Subtask("не забыть кошку",
                 "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 1,
-                "10.01.2025-16:55", 20));
+                "10.01.2025-16:55", 20L));
         managerSave.add(new Subtask("написать и согласовать ТЗ", 0,
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
-                "15.02.2025-10:00", 1000));
+                "15.02.2025-10:00", 1000L));
 
         managerSave.delTaskByID(4);
         managerSave.delEpicByID(2);

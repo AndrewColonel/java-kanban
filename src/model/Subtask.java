@@ -16,14 +16,22 @@ public class Subtask extends Task {
     }
 
     public Subtask(String name, String description, TaskStatus status, int epicID,
-                   String startTime, int duration) {
+                   String startTime, Long duration) {
         // Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
         super(name, description, status, startTime, duration);
         this.epicID = epicID;
     }
 
     public Subtask(String name, int id, String description, TaskStatus status,int epicID,
-                   String startTime,int duration) {
+                   String startTime, Long duration) {
+        // Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
+        super(name, id, description, status, startTime, duration);
+        this.epicID = epicID;
+    }
+
+    //Конструктор для создания новых задач и подзадач после восстановления из файла
+    public Subtask(String name, int id, String description, TaskStatus status,int epicID,
+                   String startTime, String duration) {
         // Параметризуем конструктор model.Subtask полями базового класса + epicID + новый id для обновления
         super(name, id, description, status, startTime, duration);
         this.epicID = epicID;
@@ -43,7 +51,7 @@ public class Subtask extends Task {
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%s", getId(),
                 TaskType.SUBTASK, getName(), getStatus(), getDescription(),
-                getEpicID(),getStartTime().format(dateTimeFormatter),getDuration());
+                getEpicID(),getFormattedStartTime(),getDuration());
     }
 }
 
