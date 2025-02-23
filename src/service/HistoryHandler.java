@@ -4,6 +4,48 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
-public class HistoryHandler extends BaseHttpHandler{
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+
+public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+        service.Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
+        switch (endpoint) {
+            case GET_HISTORY:
+                sendText(exchange, endpoint.toString());
+                break;
+            case POST_HISTORY:
+                sendText(exchange, endpoint.toString());
+                break;
+            case DELETE_HISTORY:
+                sendText(exchange, endpoint.toString());
+                break;
+            default:
+                sendNotFound(exchange);
+
+        }
+    }
+
+    private service.Endpoint getEndpoint(String requestPath, String requestMethod) {
+        String[] pathParts = requestPath.split("/");
+
+        if (pathParts.length >= 1 && pathParts[1].equals("history")) {
+            switch (requestMethod) {
+                case "GET":
+                    return Endpoint.GET_HISTORY;
+                case "POST":
+                    return Endpoint.POST_HISTORY;
+                case "DELETE":
+                    return Endpoint.DELETE_HISTORY;
+                default:
+                    return Endpoint.GET_HISTORY;
+            }
+        }
+        return Endpoint.UNKNOWN;
+    }
 
 }
