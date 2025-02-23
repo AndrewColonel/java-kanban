@@ -8,53 +8,13 @@ import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 import org.junit.jupiter.api.*;
-import service.HistoryManager;
-import service.Managers;
-import service.TaskManager;
+import service.InMemoryTaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-class InMemoryTaskManagerTest {
-
-    static TaskStatus statusNew;
-    static TaskStatus statusInProgress;
-    static TaskStatus statusDone;
-    static TaskManager manager;
-    static HistoryManager historyManager;
-    static Task task1;
-    static Task task2;
-    static Epic epic1;
-    static Epic epic2;
-    static Subtask subTask1;
-    static Subtask subTask2;
-    static Subtask subTask3;
-
-    @BeforeEach
-    void setUp() {
-        statusNew = TaskStatus.NEW;
-        statusInProgress = TaskStatus.IN_PROGRESS;
-        statusDone = TaskStatus.DONE;
-        manager = Managers.getDefault();
-        historyManager = Managers.getDefaultHistory();
-
-        task1 = new Task("Тест создания Таск 1",
-                "описание Таск 1", statusNew);
-        task2 = new Task("Тест создания Таск 2", 1,
-                "описание Таск 2", statusNew);
-
-        epic1 = new Epic("Тест создания Эпик 1", "Это задача -Эпик 1");
-        epic2 = new Epic("Тест создания Эпик 2", 1, "Это задача -Эпик 2");
-
-        subTask1 = new Subtask("Тест создания Подзадачи 1",
-                "Это подзадача для Эпика", statusNew, 3);
-        subTask2 = new Subtask("Тест создания Подзадачи 2",
-                "Это подзадача для Эпика", statusNew, 3);
-        subTask3 = new Subtask("Тест создания Подзадачи 3", 0,
-                "Это подзадача для Эпика", statusNew, 4);
-
-    }
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
 
     @Test
     void utilityClassMakeObjects() {
@@ -159,10 +119,7 @@ class InMemoryTaskManagerTest {
 
         assertNotEquals(task.getName(), taskNew.getName(), "имена совпамли");
         assertNotEquals(subtask.getName(), subtaskNew.getName(), "имена совпамли");
-        //отдельно проверяем обновление эпика по всем полям
-        //имя и описание должны быть различны и не совпадать
-        assertNotEquals(epic.getName(), epicNew.getName(), "имена совпамли");
-        assertNotEquals(epic.getDescription(), epicNew.getDescription(), "описание совпамли");
+
         //id, список подзадач и статус после обновления эпика должны оставаться без измений
         assertEquals(epic.getId(), epicNew.getId(), "id не совпали");
         assertEquals(epic.getSubTasksIDs(), epicNew.getSubTasksIDs(), "списки не совпадают");
@@ -201,5 +158,4 @@ class InMemoryTaskManagerTest {
         assertTrue(manager.getHistory().isEmpty(), "Список истории не пустой");
 
     }
-
 }

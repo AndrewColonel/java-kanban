@@ -12,33 +12,27 @@ public class Main {
         TaskStatus statusInProgress = TaskStatus.IN_PROGRESS;
         TaskStatus statusDone = TaskStatus.DONE;
 
-        //создаем экземпляр менеджераR
-        // service.InMemoryTaskManager service.InMemoryTaskManager = new service.InMemoryTaskManager();
-        //service.TaskManager manager = new service.InMemoryTaskManager();
-
-        // эксперимент с явным приведением типов
-        //service.TaskManager taskManager = service.Managers.getDefault();
-        //if (taskManager instanceof service.InMemoryTaskManager) {
-        //service.InMemoryTaskManager manager = (service.InMemoryTaskManager) taskManager;
-
         //для выбора реализации Менеджера, использую метод утилитарного класса
         TaskManager manager = Managers.getDefault();
 
         //Создание задач, эпиков и подзадач. Объекта передается в качестве параметра
         manager.add(new Task("написать cписок дел",
-                "простая, обычная, задача", statusNew));
+                "простая, обычная, задача", statusNew, "10.10.2024-00:00", 10L));
         manager.add(new Task("погулять с собакой еще раз",
-                "простая, обычная, задача - обновлена", statusNew));
+                "простая, обычная, задача - обновлена", statusNew, "10.10.2024-09:00", 30L));
 
         manager.add(new Epic("Переезд", "Это задача -Эпик №1"));
         manager.add(new Epic("Проект", "Это задача -Эпик №2"));
 
         manager.add(new Subtask("упаковать коробки",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusNew, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД", statusDone, 3,
+                "10.01.2025-17:00", 60L));
         manager.add(new Subtask("не забыть кошку",
-                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3));
+                "Это подзадача для Эпика 1 - ПЕРЕЕЗД!!!", statusNew, 3,
+                "10.01.2025-17:55", 5L));
         manager.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew, 4));
+                "Это подзадача для Эпика 2 - ПРОЕКТ", statusNew, 4,
+                "15.02.2025-10:00", 1000L));
 
         printAllTasks(manager);
 

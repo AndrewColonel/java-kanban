@@ -1,10 +1,12 @@
 package model;// Большая задача, которая делится на подзадачи, называется эпиком. Наследует model.Task
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private List<Integer> subTasksIDs;
+    private final List<Integer> subTasksIDs;
+    private LocalDateTime endTime;
     //пользуемся родительским полем status, определенном в конструкторе базового класса как NEW
 
     public Epic(String name, String description) {
@@ -25,6 +27,7 @@ public class Epic extends Task {
         //еще один конструктор для обертки эпиков
         super(epic.getName(), epic.getId(), epic.getDescription(), epic.getStatus());
         subTasksIDs = epic.getSubTasksIDs();
+        endTime = epic.getEndTime();
     }
 
     // для всех атрибутов класса нужны геттеры и сеттеры
@@ -35,7 +38,16 @@ public class Epic extends Task {
         return subTasksIDs;
     }
 
-    //в этот класс нужно добавить три метода
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    // в этот класс нужно добавить три метода
     // 1) удалит единичную подзадачу из хранилища subTasksIDs
     public void delSubTaskID(Integer id) {
         subTasksIDs.remove(id);
@@ -55,11 +67,12 @@ public class Epic extends Task {
         }
     }
 
-    //переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
-    //классе отдельно
+    // переопределяем метод toString() для организации вывода информации об объекте, будет переопределен в каждом
+    // классе отдельно
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,", getId(),
-                TaskType.EPIC, getName(), getStatus(),getDescription());
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,", getId(),
+                TaskType.EPIC, getName(), getStatus(),getDescription(),
+                getFormattedStartTime(),getFormattedEndTime(),getDuration());
     }
 }
