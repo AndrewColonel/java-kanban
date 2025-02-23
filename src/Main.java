@@ -2,8 +2,8 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 import model.TaskStatus;
-import service.Managers;
-import service.TaskManager;
+import manager.Managers;
+import manager.TaskManager;
 
 public class Main {
 

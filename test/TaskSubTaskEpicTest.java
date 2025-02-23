@@ -5,7 +5,7 @@
 
 import model.*;
 import org.junit.jupiter.api.*;
-import service.*;
+import manager.*;
 
 import java.time.LocalDateTime;
 

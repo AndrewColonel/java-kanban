@@ -7,7 +7,7 @@
 
 import model.*;
 import org.junit.jupiter.api.*;
-import service.InMemoryTaskManager;
+import manager.InMemoryTaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 

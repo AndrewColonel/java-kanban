@@ -1,4 +1,4 @@
-package service;
+package manager;
 
 import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;

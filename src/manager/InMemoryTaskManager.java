@@ -1,4 +1,4 @@
-package service;// класс для объекта - менеджера, для управления всеми "задачами"
+package manager;// класс для объекта - менеджера, для управления всеми "задачами"
 
 import model.Epic;
 import model.Subtask;

@@ -8,7 +8,7 @@ import model.Subtask;
 import model.Task;
 import model.TaskStatus;
 import org.junit.jupiter.api.*;
-import service.InMemoryTaskManager;
+import manager.InMemoryTaskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 

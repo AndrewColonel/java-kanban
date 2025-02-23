@@ -4,7 +4,7 @@ import model.Task;
 import model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 
-import service.*;
+import manager.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
 
