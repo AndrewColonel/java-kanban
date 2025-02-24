@@ -5,68 +5,89 @@
 // sendHasInteractions — для отправки ответа, если при создании или обновлении задача пересекается с уже существующими.
 package service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
-import manager.FileBackedTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import model.Task;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 public class BaseHttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    protected TaskManager manager;
-    protected TaskManager managerFile;
+    protected final TaskManager manager;
+    protected final Gson gson;
 
     public BaseHttpHandler() {
         this.manager = Managers.getDefault();
-        this.managerFile = FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
+        this.gson = new GsonBuilder()
+                .serializeNulls()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
+                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+                .create();
     }
 
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(DEFAULT_CHARSET);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(200, resp.length);
-//        exchange.sendResponseHeaders(200, 0);
         exchange.getResponseBody().write(resp);
         exchange.close();
     }
 
-    protected void sendPost(HttpExchange exchange) throws IOException {
-//        byte[] resp = text.getBytes(DEFAULT_CHARSET);
-//        exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-//        exchange.sendResponseHeaders(201, resp.length);
+    protected void sendRequestOk(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(200, 0);
+        exchange.getResponseBody().write("Request complete".getBytes(DEFAULT_CHARSET));
+        exchange.close();
+    }
+
+    protected void sendPostOk(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(201, 0);
-//        exchange.getResponseBody().write(resp);
+        exchange.getResponseBody().write("POST request complete".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
-    protected void sendNotFound(HttpExchange exchange,String text) throws IOException {
+    protected void sendNotFound(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(404, 0);
-        exchange.getResponseBody().write(text.getBytes(DEFAULT_CHARSET));
+        exchange.getResponseBody().write("Not Found".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    protected void sendHasInteractions(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(406, 0);
+        exchange.getResponseBody().write("Not Acceptable".getBytes(DEFAULT_CHARSET));
+        exchange.close();
+    }
 
-    protected void sendHasInteractions() {
+    protected void sendRequestError(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(500, 0);
+        exchange.getResponseBody().write("Internal Server Error".getBytes(DEFAULT_CHARSET));
+        exchange.close();
+    }
 
+    protected Optional<Integer> getTaskId(HttpExchange exchange) {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        try {
+            return Optional.of(Integer.parseInt(pathParts[2]));
+        } catch (NumberFormatException exception) {
+            return Optional.empty();
+        }
     }
 }
-
-
 
 class TaskListTypeToken extends TypeToken<List<Task>> {
 }
@@ -96,6 +117,5 @@ class DurationTypeAdapter extends TypeAdapter<Duration> {
     public Duration read(JsonReader jsonReader) throws IOException {
         return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
     }
-
 }
 

@@ -4,35 +4,25 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import model.Task;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
-
-//   Gson gson =new GsonBuilder()
+//    Gson gson;
+//
+//    public TaskHandler() {
+//        this.gson = new GsonBuilder()
 //                .serializeNulls()
 //                .setPrettyPrinting()
+//                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
+//                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
 //                .create();
-
-    Gson gson;
-
-    public TaskHandler() {
-        this.gson = new GsonBuilder()
-                .serializeNulls()
-                .setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-                .create();
-    }
+//    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -51,7 +41,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 handleDeleteTaskById(exchange);
                 break;
             default:
-                sendNotFound(exchange, "Такого эндпоинта не существует");
+                sendNotFound(exchange);
         }
     }
 
@@ -74,47 +64,38 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    private Optional<Integer> getTaskId(HttpExchange exchange) {
-        String[] pathParts = exchange.getRequestURI().getPath().split("/");
-        try {
-            return Optional.of(Integer.parseInt(pathParts[2]));
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
-        }
-    }
-
     private void handleGetTasksById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
-            sendNotFound(exchange, "Такоq задачи не существует");
+            sendNotFound(exchange);
         } else {
-            String taskToJson = gson.toJson(managerFile.getTaskByID(mayBeTaskId.get()));
+            String taskToJson = gson.toJson(manager.getTaskByID(mayBeTaskId.get()));
             sendText(exchange, taskToJson);
         }
     }
 
     private void handleGetTasksList(HttpExchange exchange) throws IOException {
-        String jsonTasksList = gson.toJson(managerFile.getTasksList());
+        String jsonTasksList = gson.toJson(manager.getTasksList());
         sendText(exchange, jsonTasksList);
     }
 
     private void handlePostTask(HttpExchange exchange) throws IOException {
         String requestToPost = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-        System.out.println(requestToPost);
+        // System.out.println(requestToPost);
         Task task = gson.fromJson(requestToPost, Task.class);
-        System.out.println(task);
-        if (task.getId() != 0) managerFile.update(task);
-        else managerFile.add(task);
-        sendPost(exchange);
+        // System.out.println(task);
+        if (task.getId() != 0) manager.update(task);
+        else manager.add(task);
+        sendPostOk(exchange);
     }
 
     private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
-            sendNotFound(exchange, "Такоq задачи не существует");
+            sendNotFound(exchange);
         } else {
-            managerFile.delTaskByID(mayBeTaskId.get());
-            sendText(exchange, "Задача " + mayBeTaskId.get() + " удалена");
+            manager.delTaskByID(mayBeTaskId.get());
+            sendRequestOk(exchange);
         }
     }
 

@@ -25,7 +25,7 @@ public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, endpoint.toString());
                 break;
             default:
-                sendNotFound(exchange, "Такого эндпоинта не существует");
+                sendNotFound(exchange);
 
         }
     }
