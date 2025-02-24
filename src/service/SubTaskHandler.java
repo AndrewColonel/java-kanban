@@ -25,7 +25,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, endpoint.toString());
                 break;
             default:
-                sendNotFound(exchange);
+                sendNotFound(exchange, "Такого эндпоинта не существует");
 
         }
     }
@@ -33,7 +33,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
     private service.Endpoint getEndpoint(String requestPath, String requestMethod) {
         String[] pathParts = requestPath.split("/");
 
-        if (pathParts.length >= 1 && pathParts[1].equals("subtask")) {
+        if (pathParts.length >= 1 && pathParts[1].equals("subtasks")) {
             switch (requestMethod) {
                 case "GET":
                     return Endpoint.GET_SUBTASK;

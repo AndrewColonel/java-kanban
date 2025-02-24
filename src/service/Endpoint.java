@@ -2,8 +2,11 @@ package service;
 
 public enum Endpoint {
     GET_TASK,
+    GET_TASK_BYID,
     POST_TASK,
     DELETE_TASK,
+    DELETE_TASK_BYID,
+
 
     GET_SUBTASK,
     POST_SUBTASK,

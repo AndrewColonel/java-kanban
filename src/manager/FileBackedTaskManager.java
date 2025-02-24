@@ -252,8 +252,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 2,
                 "15.02.2025-10:00", 1000L));
 
-        managerSave.delTaskByID(4);
-        managerSave.delEpicByID(2);
+//        managerSave.delTaskByID(4);
+//        managerSave.delEpicByID(2);
 
 
         System.out.println("Задачи:");
@@ -284,13 +284,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
         // загрузка данных для восстановления работы менеджера из файла
-        FileBackedTaskManager managerLoad =
+        TaskManager managerLoad =
                 FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
-
-        managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
-        managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
-                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 7,
-                "17.02.2025-11:30", 30L));
+//
+//        managerLoad.add(new Epic("Проект", "Это задача -Эпик №2"));
+//        managerLoad.add(new Subtask("написать и согласовать ТЗ", 0,
+//                "Это подзадача для Эпика 2 - ПРОЕКТ", statusDone, 7,
+//                "17.02.2025-11:30", 30L));
 
         System.out.println("Задачи:");
         for (Task task : managerLoad.getTasksList()) {

@@ -12,9 +12,9 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException {
         HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/task", new TaskHandler());
-        httpServer.createContext("/subtask", new SubTaskHandler());
-        httpServer.createContext("/epic", new EpicHandler());
+        httpServer.createContext("/tasks", new TaskHandler());
+        httpServer.createContext("/subtasks", new SubTaskHandler());
+        httpServer.createContext("/epics", new EpicHandler());
         httpServer.createContext("/history", new HistoryHandler());
         httpServer.createContext("/prioritized", new PrioritizedHandler());
         httpServer.start();

@@ -5,41 +5,58 @@
 // sendHasInteractions — для отправки ответа, если при создании или обновлении задача пересекается с уже существующими.
 package service;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
+import manager.FileBackedTaskManager;
+import manager.Managers;
+import manager.TaskManager;
+import model.Task;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class BaseHttpHandler {
-    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
+    protected TaskManager manager;
+    protected TaskManager managerFile;
+
+    public BaseHttpHandler() {
+        this.manager = Managers.getDefault();
+        this.managerFile = FileBackedTaskManager.loadFromFile(new File("FileBackedTaskManager.csv"));
+    }
 
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(DEFAULT_CHARSET);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(200, resp.length);
+//        exchange.sendResponseHeaders(200, 0);
         exchange.getResponseBody().write(resp);
         exchange.close();
     }
 
-//    protected void writeResponse(HttpExchange exchange,
-//                                 String responseString,
-//                                 int responseCode) throws IOException {
-//        try (OutputStream os = exchange.getResponseBody()) {
-//            exchange.sendResponseHeaders(responseCode, 0);
-//            os.write(responseString.getBytes(DEFAULT_CHARSET));
-//        }
-//        exchange.close();
-//    }
+    protected void sendPost(HttpExchange exchange) throws IOException {
+//        byte[] resp = text.getBytes(DEFAULT_CHARSET);
+//        exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+//        exchange.sendResponseHeaders(201, resp.length);
+        exchange.sendResponseHeaders(201, 0);
+//        exchange.getResponseBody().write(resp);
+        exchange.close();
+    }
 
-
-    protected void sendNotFound(HttpExchange exchange) throws IOException {
-        try (OutputStream os = exchange.getResponseBody()) {
-            exchange.sendResponseHeaders(404, 0);
-            os.write("Такого эндпоинта не существует".getBytes(DEFAULT_CHARSET));
-        }
+    protected void sendNotFound(HttpExchange exchange,String text) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
+        exchange.getResponseBody().write(text.getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
@@ -48,3 +65,37 @@ public class BaseHttpHandler {
 
     }
 }
+
+
+
+class TaskListTypeToken extends TypeToken<List<Task>> {
+}
+
+class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+
+    @Override
+    public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
+        jsonWriter.value(localDateTime.format(dateTimeFormatter));
+    }
+
+    @Override
+    public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+        return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
+    }
+}
+
+class DurationTypeAdapter extends TypeAdapter<Duration> {
+
+    @Override
+    public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
+        jsonWriter.value(duration.toMinutes());
+    }
+
+    @Override
+    public Duration read(JsonReader jsonReader) throws IOException {
+        return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
+    }
+
+}
+
