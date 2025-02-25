@@ -6,6 +6,10 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.ManagerLoadException;
+import exceptions.ManagerNotAcceptableException;
+import exceptions.ManagerNotFoundException;
+import exceptions.ManagerSaveException;
 import model.Task;
 
 import java.io.IOException;
@@ -64,29 +68,48 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         return Endpoint.UNKNOWN;
     }
 
+    // обработка запросов GET по ID, возвращает список задач в JSON
     private void handleGetTasksById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
             sendNotFound(exchange);
         } else {
-            String taskToJson = gson.toJson(manager.getTaskByID(mayBeTaskId.get()));
-            sendText(exchange, taskToJson);
+            try {
+                String taskToJson = gson.toJson(manager.getTaskByID(mayBeTaskId.get()));
+                sendText(exchange, taskToJson);
+            } catch (ManagerNotFoundException e) {
+                sendNotFound(exchange);
+            } catch (ManagerSaveException | ManagerLoadException e) {
+                sendRequestError(exchange);
+            }
         }
     }
 
+    // метод обрабатывает запрос на получения списка задач
     private void handleGetTasksList(HttpExchange exchange) throws IOException {
-        String jsonTasksList = gson.toJson(manager.getTasksList());
-        sendText(exchange, jsonTasksList);
+        try {
+            String jsonTasksList = gson.toJson(manager.getTasksList());
+            sendText(exchange, jsonTasksList);
+        } catch (ManagerSaveException | ManagerLoadException e) {
+            sendRequestError(exchange);
+        }
     }
 
     private void handlePostTask(HttpExchange exchange) throws IOException {
         String requestToPost = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-        // System.out.println(requestToPost);
         Task task = gson.fromJson(requestToPost, Task.class);
-        // System.out.println(task);
-        if (task.getId() != 0) manager.update(task);
-        else manager.add(task);
-        sendPostOk(exchange);
+        try {
+            // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
+            if (task.getId() != 0) manager.update(task);
+            else manager.add(task);
+            sendPostOk(exchange);
+        } catch (ManagerNotAcceptableException e) {
+            sendHasInteractions(exchange);
+        } catch (ManagerNotFoundException e) {
+            sendNotFound(exchange);
+        } catch (ManagerSaveException | ManagerLoadException e) {
+            sendRequestError(exchange);
+        }
     }
 
     private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
@@ -94,11 +117,14 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         if (mayBeTaskId.isEmpty()) {
             sendNotFound(exchange);
         } else {
-            manager.delTaskByID(mayBeTaskId.get());
-            sendRequestOk(exchange);
+            try {
+                manager.delTaskByID(mayBeTaskId.get());
+                sendRequestOk(exchange);
+            } catch (ManagerNotFoundException e) {
+                sendNotFound(exchange);
+            } catch (ManagerSaveException | ManagerLoadException e) {
+                sendRequestError(exchange);
+            }
         }
     }
-
 }
-
-

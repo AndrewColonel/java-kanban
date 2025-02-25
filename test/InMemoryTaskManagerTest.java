@@ -39,6 +39,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>{
         //проверяем, что service.InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
         manager.add(task1);
         manager.add(epic1);
+        manager.add(epic2);
         manager.add(subTask1);
         for (Task task : manager.getTasksList()) {
             assertNotNull(manager.getTaskByID(task.getId()), "Список задач не получен");

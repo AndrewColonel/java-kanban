@@ -3,6 +3,7 @@ package manager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +62,6 @@ public interface TaskManager {
 
     Set<Task> getPrioritizedTasks();
 
-    Boolean isOverlapsed(Task task);
+//    Boolean isOverlapsed(Task task);
 
 }

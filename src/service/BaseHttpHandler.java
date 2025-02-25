@@ -41,6 +41,7 @@ public class BaseHttpHandler {
                 .create();
     }
 
+    // метод для отправки кода состояния и сообщения клиенту в виде JSOn строки
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(DEFAULT_CHARSET);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
@@ -49,36 +50,42 @@ public class BaseHttpHandler {
         exchange.close();
     }
 
+    // метод для отправки кода состояния
     protected void sendRequestOk(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(200, 0);
         exchange.getResponseBody().write("Request complete".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    // метод для отправки кода состояния
     protected void sendPostOk(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(201, 0);
         exchange.getResponseBody().write("POST request complete".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    // метод для отправки кода состояния
     protected void sendNotFound(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(404, 0);
         exchange.getResponseBody().write("Not Found".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    // метод для отправки кода состояния
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(406, 0);
         exchange.getResponseBody().write("Not Acceptable".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    // метод для отправки кода состояния
     protected void sendRequestError(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(500, 0);
         exchange.getResponseBody().write("Internal Server Error".getBytes(DEFAULT_CHARSET));
         exchange.close();
     }
 
+    // метод получения ШID задач из строки запроса
     protected Optional<Integer> getTaskId(HttpExchange exchange) {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         try {
@@ -89,12 +96,13 @@ public class BaseHttpHandler {
     }
 }
 
+// класс адаптер для сериализации\десериализации дженериков
 class TaskListTypeToken extends TypeToken<List<Task>> {
 }
 
+// класс адаптер для сериализации\десериализации полей типа LocalDateTime
 class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
         jsonWriter.value(localDateTime.format(dateTimeFormatter));
@@ -106,13 +114,12 @@ class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
     }
 }
 
+// класс адаптер для сериализации\десериализации полей типа Duration
 class DurationTypeAdapter extends TypeAdapter<Duration> {
-
     @Override
     public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
         jsonWriter.value(duration.toMinutes());
     }
-
     @Override
     public Duration read(JsonReader jsonReader) throws IOException {
         return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));

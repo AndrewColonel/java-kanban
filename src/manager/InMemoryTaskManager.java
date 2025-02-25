@@ -1,5 +1,7 @@
 package manager;// класс для объекта - менеджера, для управления всеми "задачами"
 
+import exceptions.ManagerNotAcceptableException;
+import exceptions.ManagerNotFoundException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -117,6 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskByID(int id) {
         Task task = tasks.get(id);
         historyManager.add(task);
+        if (task == null) throw new ManagerNotFoundException("Задача не найдена");
         return task;
     }
 
@@ -124,6 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubTaskByID(int id) {
         Subtask subtask = subTasks.get(id);
         historyManager.add(subtask);
+        if (subtask == null) throw new ManagerNotFoundException("Подзадача не найдена");
         return subtask;
     }
 
@@ -132,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
         // Эпик с пустым списком подзадач будет напечатан
         Epic epic = epics.get(id);
         historyManager.add(epic);
+        if (epic == null) throw new ManagerNotFoundException("Эпик не найден");
         return epic;
     }
 
@@ -139,27 +144,28 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void add(Task task) {
         // если временной отрезок задачи не пересекается с остальными задачами
-        if (isOverlapsed(task)) return;
+        if (!isOverlapsed(task)) {
 
-        task.setId(nextId++);
-        tasks.put(task.getId(), task);
-
+            task.setId(nextId++);
+            tasks.put(task.getId(), task);
+        } else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
 
     @Override
     public void add(Subtask subtask) {
         // если временной отрезок задачи не пересекается с остальными задачами
-        if (isOverlapsed(subtask)) return;
+        if (!isOverlapsed(subtask)) {
 
-        if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи эпик нашелся
-            subtask.setId(nextId++); // то подзадача получает id
-            subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
-            Epic epic = epics.get(subtask.getEpicID()); //вытаскиваем необходимый эпик для добавления подзадачи
-            epic.addSubTaskID(subtask.getId()); // и добавляется в список эпика
-            calculateEpicParams(epic); // добавилась новая подзадача, рассчитаем статус эпика
-
-        }
+            if (epics.containsKey(subtask.getEpicID())) { //если соответсвующий подзадачи эпик нашелся
+                subtask.setId(nextId++); // то подзадача получает id
+                subTasks.put(subtask.getId(), subtask); //и сохраняется в subTasks
+                Epic epic = epics.get(subtask.getEpicID()); //вытаскиваем необходимый эпик для добавления подзадачи
+                epic.addSubTaskID(subtask.getId()); // и добавляется в список эпика
+                calculateEpicParams(epic); // добавилась новая подзадача, рассчитаем статус эпика
+            } else throw new ManagerNotFoundException("Эпика для подзадачи не найдено");
+        } else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
+
 
     @Override
     public void add(Epic epic) {
@@ -172,29 +178,31 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void update(Task task) {
         // если временной отрезок задачи не пересекается с остальными задачами
-        if (isOverlapsed(task)) return;
+        if (!isOverlapsed(task)) {
 
-        // обновляется только та задача, которая ранее была в tasks
-        if (tasks.containsKey(task.getId())) {
-            tasks.put(task.getId(), task);
-        }
+            // обновляется только та задача, которая ранее была в tasks
+            if (tasks.containsKey(task.getId())) {
+                tasks.put(task.getId(), task);
+            } else throw new ManagerNotFoundException("Задача для обновления не найдена");
+        }  else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
 
     @Override
     public void update(Subtask subtask) {
         // если временной отрезок задачи не пересекается с остальными задачами
-        if (isOverlapsed(subtask)) return;
+        if (!isOverlapsed(subtask)) {
 
-        // проверяем есть ли такая подзадача, не существующую подзадачу не обновляем
-        if (subTasks.containsKey(subtask.getId())) {
-            Subtask updatedSubTask = subTasks.get(subtask.getId());
-            if (subtask.getEpicID() == updatedSubTask.getEpicID()) {
-                // проверяем равенство epicID старой и новой подзадачи
-                subTasks.put(subtask.getId(), subtask);//Обновляем подзадачу в хранилище subTasks
-                //Пересчитываем статус Эпика, к которой прилинкована эта подзадача
-                calculateEpicParams(epics.get(subtask.getEpicID()));
-            }
-        }
+            // проверяем есть ли такая подзадача, не существующую подзадачу не обновляем
+            if (subTasks.containsKey(subtask.getId())) {
+                Subtask updatedSubTask = subTasks.get(subtask.getId());
+                if (subtask.getEpicID() == updatedSubTask.getEpicID()) {
+                    // проверяем равенство epicID старой и новой подзадачи
+                    subTasks.put(subtask.getId(), subtask);//Обновляем подзадачу в хранилище subTasks
+                    //Пересчитываем статус Эпика, к которой прилинкована эта подзадача
+                    calculateEpicParams(epics.get(subtask.getEpicID()));
+                } else throw new ManagerNotFoundException("Эпика для подзадачи не найдено");
+            } else throw new ManagerNotFoundException("Подазадча для обновления не найдена");
+        }  else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
 
     @Override
@@ -206,14 +214,16 @@ public class InMemoryTaskManager implements TaskManager {
             updatedEpic.setName(epic.getName());
             updatedEpic.setDescription(epic.getDescription());
             epics.put(epic.getId(), updatedEpic);
-        }
+        } else throw new ManagerNotFoundException("Эпик для обновления не найден");
     }
 
     //f. Удаление по идентификатору.
     @Override
     public void delTaskByID(int id) {
-        tasks.remove(id);
-        historyManager.remove(id);//удаляем задачу из истории
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+            historyManager.remove(id);//удаляем задачу из истории
+        } else throw new ManagerNotFoundException("задача для удаления не найдена");
     }
 
     @Override
@@ -226,7 +236,7 @@ public class InMemoryTaskManager implements TaskManager {
             calculateEpicParams(epic); //удалили подзадачу, пересчитали статус
             subTasks.remove(id);
             historyManager.remove(id);//удаляем задачу из истории
-        }
+        } else throw new ManagerNotFoundException("Подзадача для удаления не найдена");
     }
 
     @Override
@@ -238,7 +248,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subTasks.remove(subTasksID);
                 historyManager.remove(subTasksID); //удаляем задачу из истории
             }
-        }
+        } else throw new ManagerNotFoundException("Эпик для удаление не найден");
         epics.remove(id);
         historyManager.remove(id); //удаляем задачу из истории
     }
@@ -326,7 +336,7 @@ public class InMemoryTaskManager implements TaskManager {
     // для хранения остортированных данных метод добавляет остортированный списко в поле типа TreeSet,
     // сохраняющий уже отсоритированные данные
     @Override
-    public Set<Task> getPrioritizedTasks() {
+    public Set<Task> getPrioritizedTasks() { //TODO возможно стоит удалить из интерфейса
         List<Task> prioritzedTasksList = new ArrayList<>();
         //собираем все задачи и подзадачи в один список
         prioritzedTasksList.addAll(getTasksList());
@@ -341,8 +351,8 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasksSet;
     }
 
-    @Override
-    public Boolean isOverlapsed(Task task) {
+//    @Override
+    public Boolean isOverlapsed(Task task) {//TODO возможно стоит удалить из интерфейса
         // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
         // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи
         // Если хотя бы один элемент удовлетворяет предикату, возвращается true, иначе — false
@@ -351,6 +361,7 @@ public class InMemoryTaskManager implements TaskManager {
                     // поскольку метод используется и при обновлении сущностей, нужно добавить фильтр по id,
                     // чтобы не сравнивать между собой старую и новую версии
                     .filter(pt -> task.getId() != pt.getId())
+                    // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
                     .anyMatch((pt) ->
                             (task.getStartTime().isAfter(pt.getStartTime())
                                     && (task.getStartTime().isBefore(pt.getEndTime())))
