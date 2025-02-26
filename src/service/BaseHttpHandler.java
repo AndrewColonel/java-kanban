@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
 import manager.Managers;
@@ -31,7 +32,8 @@ public class BaseHttpHandler {
     // final ststic - все handlers наследуют одиг=н и тот же экземпляр менеджера
     protected final static TaskManager manager = Managers.getDefault();
 
-    protected  Gson gson;
+    protected Gson gson;
+
     public BaseHttpHandler() {
 //        this.manager = Managers.getDefault();
         this.gson = new GsonBuilder()
@@ -107,17 +109,17 @@ class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
 
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
-//        if (localDateTime == null) jsonWriter.value("null");
-//        else jsonWriter.value(localDateTime.format(dateTimeFormatter));
-        jsonWriter.value(localDateTime.format(dateTimeFormatter));
+        if (localDateTime == null) jsonWriter.nullValue();
+        else jsonWriter.value(localDateTime.format(dateTimeFormatter));
     }
 
     @Override
     public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-//        if (jsonReader.nextString().equals("null")) return null;
-//        else return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
-        return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
-
+        if (JsonToken.NULL.equals(jsonReader.peek())) {
+            // если токен NULL
+            jsonReader.nextNull();
+            return null;
+        } else return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
     }
 }
 
@@ -125,14 +127,18 @@ class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
 class DurationTypeAdapter extends TypeAdapter<Duration> {
     @Override
     public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-        if (duration == null) jsonWriter.value(0);
+        if (duration == null) jsonWriter.nullValue();
         else jsonWriter.value(duration.toMinutes());
     }
 
     @Override
     public Duration read(JsonReader jsonReader) throws IOException {
-//        if (jsonReader.nextString().equals("null")) return Duration.ofMinutes(0);
-        return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
+        if (JsonToken.NULL.equals(jsonReader.peek())) {
+            // если токен NULL
+            jsonReader.nextNull();
+            return null;
+        } else return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
+        // nextString считывает и цифру, и строку
     }
 }
 

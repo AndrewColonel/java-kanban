@@ -4,6 +4,7 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
@@ -69,7 +70,8 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, taskToJson);
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                     | ManagerSaveException | ManagerLoadException e) {
                 sendRequestError(exchange);
             }
         }
@@ -80,11 +82,8 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String jsonTasksList = gson.toJson(manager.getSubTasksList());
             sendText(exchange, jsonTasksList);
-
-//            System.out.println(manager);
-//            System.out.println(manager.getSubTasksList());
-
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
@@ -101,7 +100,8 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }

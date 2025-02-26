@@ -4,6 +4,7 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
@@ -17,17 +18,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
-
-//    Gson gson;
-//
-//    public TaskHandler() {
-//        this.gson = new GsonBuilder()
-//                .serializeNulls()
-//                .setPrettyPrinting()
-//                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
-//                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-//                .create();
-//    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -80,7 +70,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, taskToJson);
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                     | ManagerSaveException | ManagerLoadException e) {
                 sendRequestError(exchange);
             }
         }
@@ -91,7 +82,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String jsonTasksList = gson.toJson(manager.getTasksList());
             sendText(exchange, jsonTasksList);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e){
             sendRequestError(exchange);
         }
     }
@@ -105,17 +97,12 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             if (task.getId() != 0) manager.update(task); //ID не 0, обновляем
             else manager.add(task);
             sendPostOk(exchange);
-
-//        } catch (RuntimeException e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }

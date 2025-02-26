@@ -4,8 +4,6 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -14,7 +12,6 @@ import exceptions.ManagerNotAcceptableException;
 import exceptions.ManagerNotFoundException;
 import exceptions.ManagerSaveException;
 import model.Epic;
-import model.Subtask;
 
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
@@ -88,7 +85,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String jsonTasksList = gson.toJson(manager.getEpicsList());
             sendText(exchange, jsonTasksList);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
@@ -107,7 +105,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
@@ -138,17 +137,11 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             try {
                 String subtaskListToJson = gson.toJson(manager.getSubTasksListByEpic(mayBeTaskId.get()));
                 sendText(exchange, subtaskListToJson);
-
-//                System.out.println(manager);
-//                System.out.println(manager.getSubTasksListByEpic(mayBeTaskId.get()));
-//                System.out.println(manager.getSubTasksList());
-
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                     | ManagerSaveException | ManagerLoadException e) {
 
-//                System.out.println(e.getMessage());
-//                e.printStackTrace();
 
                 sendRequestError(exchange);
             }

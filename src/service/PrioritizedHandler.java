@@ -4,6 +4,7 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
@@ -40,7 +41,8 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String jsonTasksList = gson.toJson(manager.getPrioritizedTasks());
             sendText(exchange, jsonTasksList);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }

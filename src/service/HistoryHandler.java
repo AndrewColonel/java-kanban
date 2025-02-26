@@ -4,6 +4,7 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
@@ -11,7 +12,6 @@ import exceptions.ManagerSaveException;
 
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
-import java.util.Objects;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -40,7 +40,8 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String jsonTasksList = gson.toJson(manager.getHistory());
             sendText(exchange, jsonTasksList);
-        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+        } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }

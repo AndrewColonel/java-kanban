@@ -267,8 +267,8 @@ public class InMemoryTaskManager implements TaskManager {
         } else throw new ManagerNotFoundException("Эпик для обновления не найден");
     }
 
-    //Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
-// сохраняю компаратор задач по дате начала в переменную  taskCompareByDate для повторного использования
+    // Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
+    // сохраняю компаратор задач по дате начала в переменную  taskCompareByDate для повторного использования
     Comparator<Task> taskCompareByDate = Comparator.comparing(Task::getStartTime);
 
     private void calculateEpicParams(Epic epic) {
@@ -356,12 +356,11 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasksSet;
     }
 
-    //    @Override
     public Boolean isOverlapsed(Task task) {//TODO возможно стоит удалить из интерфейса
         // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
         // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи
         // Если хотя бы один элемент удовлетворяет предикату, возвращается true, иначе — false
-        if (task.isStartTimeValid())
+        if (task.isStartTimeValid() && task.isDurationValid())
             return getPrioritizedTasks().stream()
                     // поскольку метод используется и при обновлении сущностей, нужно добавить фильтр по id,
                     // чтобы не сравнивать между собой старую и новую версии
@@ -375,7 +374,7 @@ public class InMemoryTaskManager implements TaskManager {
                                     || (task.getStartTime().isBefore(pt.getStartTime())
                                     && (task.getEndTime().isAfter(pt.getEndTime())))
                                     || (task.getStartTime().isEqual(pt.getStartTime())
-                                    && (task.getEndTime().isEqual(pt.getEndTime()))));
+                                    || (task.getEndTime().isEqual(pt.getEndTime()))));
         else return false;
     }
 }
