@@ -96,6 +96,12 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             if (subTask.getId() != 0) manager.update(subTask); //ID не 0, обновляем
             else manager.add(subTask);
             sendPostOk(exchange);
+//
+//        }catch (RuntimeException e) {
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {

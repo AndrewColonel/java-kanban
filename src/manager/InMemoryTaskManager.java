@@ -341,7 +341,7 @@ public class InMemoryTaskManager implements TaskManager {
     // для хранения остортированных данных метод добавляет остортированный списко в поле типа TreeSet,
     // сохраняющий уже отсоритированные данные
     @Override
-    public Set<Task> getPrioritizedTasks() { //TODO возможно стоит удалить из интерфейса
+    public Set<Task> getPrioritizedTasks() {
         List<Task> prioritzedTasksList = new ArrayList<>();
         //собираем все задачи и подзадачи в один список
         prioritzedTasksList.addAll(getTasksList());
@@ -356,7 +356,7 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasksSet;
     }
 
-    public Boolean isOverlapsed(Task task) {//TODO возможно стоит удалить из интерфейса
+    public Boolean isOverlapsed(Task task) {
         // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
         // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи
         // Если хотя бы один элемент удовлетворяет предикату, возвращается true, иначе — false

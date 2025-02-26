@@ -101,6 +101,14 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             if (epic.getId() != 0) manager.update(epic);
             else manager.add(epic);
             sendPostOk(exchange);
+
+//        }catch (RuntimeException e){
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+
+
+
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {

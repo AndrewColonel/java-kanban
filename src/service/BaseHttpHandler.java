@@ -13,8 +13,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
-import manager.Managers;
-import manager.TaskManager;
+
+import manager.*;
 import model.Task;
 
 import java.io.IOException;
@@ -30,19 +30,21 @@ public class BaseHttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     // final ststic - все handlers наследуют одиг=н и тот же экземпляр менеджера
-    protected final static TaskManager manager = Managers.getDefault();
+    // protected final static TaskManager manager = Managers.getDefault();
+    protected final static TaskManager manager = HttpTaskServer.getHttpServerManager();
 
-    protected Gson gson;
+//    protected Gson gson;
+//    public BaseHttpHandler() {
+////        this.manager = Managers.getDefault();
+//        this.gson = new GsonBuilder()
+//                .serializeNulls()
+//                .setPrettyPrinting()
+//                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
+//                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+//                .create();
+//    }
 
-    public BaseHttpHandler() {
-//        this.manager = Managers.getDefault();
-        this.gson = new GsonBuilder()
-                .serializeNulls()
-                .setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-                .create();
-    }
+    protected Gson gson = HttpTaskServer.getGson();
 
     // метод для отправки кода состояния и сообщения клиенту в виде JSOn строки
     protected void sendText(HttpExchange exchange, String text) throws IOException {
