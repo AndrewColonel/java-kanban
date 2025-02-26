@@ -79,7 +79,7 @@ class TaskHandlerTest {
 
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Test 3", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals("Test 3", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
     }
 
 }
