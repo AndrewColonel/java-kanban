@@ -184,7 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (tasks.containsKey(task.getId())) {
                 tasks.put(task.getId(), task);
             } else throw new ManagerNotFoundException("Задача для обновления не найдена");
-        }  else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
+        } else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
 
     @Override
@@ -202,7 +202,7 @@ public class InMemoryTaskManager implements TaskManager {
                     calculateEpicParams(epics.get(subtask.getEpicID()));
                 } else throw new ManagerNotFoundException("Эпика для подзадачи не найдено");
             } else throw new ManagerNotFoundException("Подазадча для обновления не найдена");
-        }  else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
+        } else throw new ManagerNotAcceptableException("Пересечение временных отрезков");
     }
 
     @Override
@@ -256,10 +256,15 @@ public class InMemoryTaskManager implements TaskManager {
     //Дополнительные методы - получение списка всех подзадач определённого эпика
     @Override
     public List<Subtask> getSubTasksListByEpic(int epicId) {
-        return epics.get(epicId).getSubTasksIDs().stream()
-                .filter(Objects::nonNull)
-                .map(subTasks::get)
-                .collect(Collectors.toList());
+        // метод бросает exception в случае отсуптсвия эпика в списке вообще
+        // возвращает пустой списко, если пордзадач нет
+        // собирает списко подзадач, если их ID есть в списке подзадач эпика
+        if (epics.containsKey(epicId)) {
+            if (epics.get(epicId).getSubTasksIDs().isEmpty()) return new ArrayList<>();
+            return epics.get(epicId).getSubTasksIDs().stream()
+                    .map(subTasks::get)
+                    .collect(Collectors.toList());
+        } else throw new ManagerNotFoundException("Эпик для обновления не найден");
     }
 
     //Comparator<Task> taskCompareByDate = (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime());
@@ -351,7 +356,7 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasksSet;
     }
 
-//    @Override
+    //    @Override
     public Boolean isOverlapsed(Task task) {//TODO возможно стоит удалить из интерфейса
         // Метод anyMatch() проверяет, соответствует ли хотя бы один элемент потока заданному условию (предикату).
         // лямбда внутри выдает true или false, если есть пересечение временных отрезков имеющихся и проверяемой задачи

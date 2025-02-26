@@ -6,46 +6,42 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.ManagerLoadException;
+import exceptions.ManagerSaveException;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
-public class HistoryHandler  extends BaseHttpHandler implements HttpHandler {
+public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        service.Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-        switch (endpoint) {
-            case GET_HISTORY:
-                sendText(exchange, endpoint.toString());
-                break;
-            case POST_HISTORY:
-                sendText(exchange, endpoint.toString());
-                break;
-            case DELETE_HISTORY:
-                sendText(exchange, endpoint.toString());
-                break;
-            default:
-                sendNotFound(exchange);
-
+        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
+        if (endpoint == Endpoint.GET_HISTORY) {
+            handleGetHistory(exchange);
+        } else {
+            sendNotFound(exchange);
         }
     }
 
     private service.Endpoint getEndpoint(String requestPath, String requestMethod) {
         String[] pathParts = requestPath.split("/");
-
-        if (pathParts.length >= 1 && pathParts[1].equals("history")) {
-            switch (requestMethod) {
-                case "GET":
-                    return Endpoint.GET_HISTORY;
-                case "POST":
-                    return Endpoint.POST_HISTORY;
-                case "DELETE":
-                    return Endpoint.DELETE_HISTORY;
-                default:
-                    return Endpoint.GET_HISTORY;
+        if (pathParts.length == 2 && pathParts[1].equals("history")) {
+            if (requestMethod.equals("GET")) {
+                return Endpoint.GET_HISTORY;
             }
         }
         return Endpoint.UNKNOWN;
     }
 
+    // обработка запросов GET, возвращает список истории задач в JSON (коды статуса 200 и 500)
+    private void handleGetHistory(HttpExchange exchange) throws IOException {
+        try {
+            String jsonTasksList = gson.toJson(manager.getHistory());
+            sendText(exchange, jsonTasksList);
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            sendRequestError(exchange);
+        }
+    }
 }

@@ -4,6 +4,9 @@
 // для удаления данных (например, для удаления задачи) — DELETE.
 package service;
 
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
@@ -14,6 +17,7 @@ import model.Epic;
 import model.Subtask;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
@@ -62,7 +66,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    // обработка запросов GET по ID, возвращает список задач в JSON
+    // обработка запросов GET, возвращает задачу по ее ID в JSON (коды статуса 200, 404 и 500)
     private void handleGetEpicsById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
@@ -73,30 +77,28 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, taskToJson);
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (ManagerSaveException | ManagerLoadException e) {
+            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
                 sendRequestError(exchange);
             }
         }
     }
 
-    // метод обрабатывает запрос на получения списка задач
+    // обработка запросов GET, возвращает список задач в JSON (коды статуса 200 и 500)
     private void handleGetEpicsList(HttpExchange exchange) throws IOException {
         try {
             String jsonTasksList = gson.toJson(manager.getEpicsList());
             sendText(exchange, jsonTasksList);
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            sendRequestError(exchange);
         }
-
-//        } catch (ManagerSaveException | ManagerLoadException e) {
-//            sendRequestError(exchange);
-//        }
     }
 
+    // обработка запросов POST, обновляет или создает задачу из JSON (коды статуса 200, 404, 406 и 500)
     private void handlePostEpics(HttpExchange exchange) throws IOException {
         String requestToPost = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-        Epic epic = gson.fromJson(requestToPost, Epic.class);
+
         try {
+            Epic epic = gson.fromJson(requestToPost, Epic.class);
             // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
             if (epic.getId() != 0) manager.update(epic);
             else manager.add(epic);
@@ -105,11 +107,12 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (ManagerSaveException | ManagerLoadException e) {
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
 
+    // обработка запросов DELETE, удаляет задачу по ID (коды статуса 200, 404 и 500)
     private void handleDeleteEpicsById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
@@ -126,7 +129,30 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleEpicSubtasks(HttpExchange exchange) {
+    // обработка запросов GET, возвращает список подзадач по ID эпика (коды статуса 200, 404 и 500)
+    private void handleEpicSubtasks(HttpExchange exchange) throws IOException {
+        Optional<Integer> mayBeTaskId = getTaskId(exchange);
+        if (mayBeTaskId.isEmpty()) {
+            sendNotFound(exchange);
+        } else {
+            try {
+                String subtaskListToJson = gson.toJson(manager.getSubTasksListByEpic(mayBeTaskId.get()));
+                sendText(exchange, subtaskListToJson);
+
+//                System.out.println(manager);
+//                System.out.println(manager.getSubTasksListByEpic(mayBeTaskId.get()));
+//                System.out.println(manager.getSubTasksList());
+
+            } catch (ManagerNotFoundException e) {
+                sendNotFound(exchange);
+            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+
+//                System.out.println(e.getMessage());
+//                e.printStackTrace();
+
+                sendRequestError(exchange);
+            }
+        }
 
     }
 

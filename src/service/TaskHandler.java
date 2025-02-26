@@ -13,6 +13,7 @@ import exceptions.ManagerSaveException;
 import model.Task;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
@@ -68,7 +69,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    // обработка запросов GET по ID, возвращает список задач в JSON
+    // обработка запросов GET, возвращает задачу по ее ID в JSON (коды статуса 200, 404 и 500)
     private void handleGetTasksById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
@@ -79,39 +80,47 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, taskToJson);
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (ManagerSaveException | ManagerLoadException e) {
+            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
                 sendRequestError(exchange);
             }
         }
     }
 
-    // метод обрабатывает запрос на получения списка задач
+    // обработка запросов GET, возвращает список задач в JSON (коды статуса 200 и 500)
     private void handleGetTasksList(HttpExchange exchange) throws IOException {
         try {
             String jsonTasksList = gson.toJson(manager.getTasksList());
             sendText(exchange, jsonTasksList);
-        } catch (ManagerSaveException | ManagerLoadException e) {
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
 
+    // обработка запросов POST, обновляет или создает задачу из JSON (коды статуса 200, 404, 406 и 500)
     private void handlePostTask(HttpExchange exchange) throws IOException {
         String requestToPost = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-        Task task = gson.fromJson(requestToPost, Task.class);
         try {
-            // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
-            if (task.getId() != 0) manager.update(task);
+            Task task = gson.fromJson(requestToPost, Task.class);
+            // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID
+            if (task.getId() != 0) manager.update(task); //ID не 0, обновляем
             else manager.add(task);
             sendPostOk(exchange);
+
+//        } catch (RuntimeException e) {
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (ManagerSaveException | ManagerLoadException e) {
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
 
+    // обработка запросов DELETE, удаляет задачу по ID (коды статуса 200, 404 и 500)
     private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {

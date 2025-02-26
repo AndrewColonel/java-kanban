@@ -13,6 +13,7 @@ import exceptions.ManagerSaveException;
 import model.*;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
@@ -57,7 +58,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    // обработка запросов GET по ID, возвращает список задач в JSON
+    // обработка запросов GET, возвращает список задач в JSON (коды статуса 200 и 500)
     private void handleGetSubTasksById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {
@@ -68,39 +69,43 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, taskToJson);
             } catch (ManagerNotFoundException e) {
                 sendNotFound(exchange);
-            } catch (ManagerSaveException | ManagerLoadException e) {
+            } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
                 sendRequestError(exchange);
             }
         }
     }
 
-    // метод обрабатывает запрос на получения списка задач
+    // обработка запросов POST, обновляет или создает задачу из JSON (коды статуса 200, 404, 406 и 500)
     private void handleGetSubTasksList(HttpExchange exchange) throws IOException {
         try {
             String jsonTasksList = gson.toJson(manager.getSubTasksList());
             sendText(exchange, jsonTasksList);
-        } catch (ManagerSaveException | ManagerLoadException e) {
+
+//            System.out.println(manager);
+//            System.out.println(manager.getSubTasksList());
+
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
 
     private void handlePostSubTask(HttpExchange exchange) throws IOException {
         String requestToPost = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-        Subtask subTask = gson.fromJson(requestToPost, Subtask.class);
         try {
+            Subtask subTask = gson.fromJson(requestToPost, Subtask.class);
             // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
-            if (subTask.getId() != 0) manager.update(subTask);
+            if (subTask.getId() != 0) manager.update(subTask); //ID не 0, обновляем
             else manager.add(subTask);
             sendPostOk(exchange);
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {
             sendNotFound(exchange);
-        } catch (ManagerSaveException | ManagerLoadException e) {
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
-
+    // обработка запросов DELETE, удаляет задачу по ID (коды статуса 200, 404 и 500)
     private void handleDeleteSubTaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
         if (mayBeTaskId.isEmpty()) {

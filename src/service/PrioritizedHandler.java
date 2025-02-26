@@ -6,46 +6,42 @@ package service;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.ManagerLoadException;
+import exceptions.ManagerSaveException;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        service.Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-        switch (endpoint) {
-            case GET_PRIORITIZED:
-                sendText(exchange, endpoint.toString());
-                break;
-            case POST_PRIORITIZED:
-                sendText(exchange, endpoint.toString());
-                break;
-            case DELETE_PRIORITIZED:
-                sendText(exchange, endpoint.toString());
-                break;
-            default:
-                sendNotFound(exchange);
-
+        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
+        if (endpoint == Endpoint.GET_PRIORITIZED) {
+            handleGetHistory(exchange);
+        } else {
+            sendNotFound(exchange);
         }
     }
 
     private service.Endpoint getEndpoint(String requestPath, String requestMethod) {
         String[] pathParts = requestPath.split("/");
-
-        if (pathParts.length >= 1 && pathParts[1].equals("prioritized")) {
-            switch (requestMethod) {
-                case "GET":
-                    return Endpoint.GET_PRIORITIZED;
-                case "POST":
-                    return Endpoint.POST_PRIORITIZED;
-                case "DELETE":
-                    return Endpoint.DELETE_PRIORITIZED;
-                default:
-                    return Endpoint.DELETE_PRIORITIZED;
+        if (pathParts.length == 2 && pathParts[1].equals("prioritized")) {
+            if (requestMethod.equals("GET")) {
+                return Endpoint.GET_PRIORITIZED;
             }
         }
         return Endpoint.UNKNOWN;
     }
 
+    // обработка запросов GET, возвращает отсортированный по времени
+    // список задач в JSON (коды статуса 200 и 500)
+    private void handleGetHistory(HttpExchange exchange) throws IOException {
+        try {
+            String jsonTasksList = gson.toJson(manager.getPrioritizedTasks());
+            sendText(exchange, jsonTasksList);
+        } catch (NullPointerException | DateTimeParseException | ManagerSaveException | ManagerLoadException e) {
+            sendRequestError(exchange);
+        }
+    }
 }

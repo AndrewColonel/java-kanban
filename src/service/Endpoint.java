@@ -18,14 +18,8 @@ public enum Endpoint {
     DELETE_EPIC_BYID,
 
     GET_HISTORY,
-    POST_HISTORY,
-    DELETE_HISTORY,
 
     GET_PRIORITIZED,
-    POST_PRIORITIZED,
-    DELETE_PRIORITIZED,
 
     UNKNOWN
-
-
 }

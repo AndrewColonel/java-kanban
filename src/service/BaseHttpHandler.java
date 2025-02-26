@@ -28,11 +28,12 @@ import java.util.Optional;
 public class BaseHttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    protected final TaskManager manager;
-    protected final Gson gson;
+    // final ststic - все handlers наследуют одиг=н и тот же экземпляр менеджера
+    protected final static TaskManager manager = Managers.getDefault();
 
+    protected  Gson gson;
     public BaseHttpHandler() {
-        this.manager = Managers.getDefault();
+//        this.manager = Managers.getDefault();
         this.gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
@@ -85,7 +86,7 @@ public class BaseHttpHandler {
         exchange.close();
     }
 
-    // метод получения ШID задач из строки запроса
+    // метод получения ID задач из строки запроса
     protected Optional<Integer> getTaskId(HttpExchange exchange) {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         try {
@@ -103,14 +104,20 @@ class TaskListTypeToken extends TypeToken<List<Task>> {
 // класс адаптер для сериализации\десериализации полей типа LocalDateTime
 class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
+//        if (localDateTime == null) jsonWriter.value("null");
+//        else jsonWriter.value(localDateTime.format(dateTimeFormatter));
         jsonWriter.value(localDateTime.format(dateTimeFormatter));
     }
 
     @Override
     public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+//        if (jsonReader.nextString().equals("null")) return null;
+//        else return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
         return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
+
     }
 }
 
@@ -118,10 +125,13 @@ class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
 class DurationTypeAdapter extends TypeAdapter<Duration> {
     @Override
     public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-        jsonWriter.value(duration.toMinutes());
+        if (duration == null) jsonWriter.value(0);
+        else jsonWriter.value(duration.toMinutes());
     }
+
     @Override
     public Duration read(JsonReader jsonReader) throws IOException {
+//        if (jsonReader.nextString().equals("null")) return Duration.ofMinutes(0);
         return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
     }
 }
