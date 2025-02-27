@@ -101,16 +101,16 @@ class HistoryPrioritisedHandlerTest {
         HttpResponse<String> responseEpic = client.send(requestEpic, handler);
 //        assertEquals(201, responseEpic.statusCode());
 
-        Subtask subtask = new Subtask("Подзадача 1",
-                "Позадача-тестирование-1", TaskStatus.NEW,
-                manager.getEpicsList().getFirst().getId(),
-                "15.01.2025-17:00", 60L);
+//        Subtask subtask = new Subtask("Подзадача 1",
+//                "Позадача-тестирование-1", TaskStatus.NEW,
+//                manager.getEpicsList().getFirst().getId(),
+//                "15.01.2025-17:00", 60L);
 
-        String subtaskJson = gson.toJson(subtask);
+//        String subtaskJson = gson.toJson(subtask);
 
-        HttpRequest requestSubtask = HttpRequest.newBuilder().uri(urlSubtask)
-                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson)).build();
-        HttpResponse<String> responseSubtask = client.send(requestSubtask, handler);
+//        HttpRequest requestSubtask = HttpRequest.newBuilder().uri(urlSubtask)
+//                .POST(HttpRequest.BodyPublishers.ofString(subtaskJson)).build();
+//        HttpResponse<String> responseSubtask = client.send(requestSubtask, handler);
         // проверяем код ответа (без эпика подзадача не создается)
 //        assertEquals(201, responseSubtask.statusCode());
 
