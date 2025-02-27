@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;
+import service.handlerbase.BaseHttpHandler;
 
 import java.io.IOException;
 import java.time.format.DateTimeParseException;

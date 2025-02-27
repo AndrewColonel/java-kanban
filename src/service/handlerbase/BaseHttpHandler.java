@@ -3,7 +3,7 @@
 // sendText — для отправки общего ответа в случае успеха;
 // sendNotFound — для отправки ответа в случае, если объект не был найден;
 // sendHasInteractions — для отправки ответа, если при создании или обновлении задача пересекается с уже существующими.
-package service;
+package service.handlerbase;
 
 import com.google.gson.Gson;
 
@@ -16,11 +16,11 @@ import com.sun.net.httpserver.HttpExchange;
 
 import manager.*;
 import model.Task;
+import service.HttpTaskServer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,7 +31,7 @@ public class BaseHttpHandler {
 
     // final ststic - все handlers наследуют одиг=н и тот же экземпляр менеджера
     // protected final static TaskManager manager = Managers.getDefault();
-    protected final static TaskManager manager = HttpTaskServer.getHttpServerManager();
+    protected static final TaskManager manager = HttpTaskServer.getHttpServerManager();
 
     protected Gson gson = HttpTaskServer.getGson();
 
@@ -89,47 +89,3 @@ public class BaseHttpHandler {
         }
     }
 }
-
-// класс адаптер для сериализации\десериализации дженериков
-class TaskListTypeToken extends TypeToken<List<Task>> {
-}
-
-// класс адаптер для сериализации\десериализации полей типа LocalDateTime
-class LocalTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-
-    @Override
-    public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
-        if (localDateTime == null) jsonWriter.nullValue();
-        else jsonWriter.value(localDateTime.format(dateTimeFormatter));
-    }
-
-    @Override
-    public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-        if (JsonToken.NULL.equals(jsonReader.peek())) {
-            // если токен NULL
-            jsonReader.nextNull();
-            return null;
-        } else return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormatter);
-    }
-}
-
-// класс адаптер для сериализации\десериализации полей типа Duration
-class DurationTypeAdapter extends TypeAdapter<Duration> {
-    @Override
-    public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-        if (duration == null) jsonWriter.nullValue();
-        else jsonWriter.value(duration.toMinutes());
-    }
-
-    @Override
-    public Duration read(JsonReader jsonReader) throws IOException {
-        if (JsonToken.NULL.equals(jsonReader.peek())) {
-            // если токен NULL
-            jsonReader.nextNull();
-            return null;
-        } else return Duration.ofMinutes(Long.parseLong(jsonReader.nextString()));
-        // nextString считывает и цифру, и строку
-    }
-}
-

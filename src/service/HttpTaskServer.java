@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import manager.*;
+import service.handlerbase.DurationTypeAdapter;
+import service.handlerbase.LocalTimeTypeAdapter;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
