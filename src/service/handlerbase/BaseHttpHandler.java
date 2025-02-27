@@ -7,23 +7,16 @@ package service.handlerbase;
 
 import com.google.gson.Gson;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
 
 import manager.*;
-import model.Task;
+
 import service.HttpTaskServer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 import java.util.Optional;
 
 public class BaseHttpHandler {
