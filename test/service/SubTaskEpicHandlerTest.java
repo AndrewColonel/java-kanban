@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,19 +75,26 @@ class SubTaskEpicHandlerTest {
 
         HttpResponse<String> responseEpic = client.send(requestEpic,
                 HttpResponse.BodyHandlers.ofString());
-//        assertEquals(201, responseEpic.statusCode());
+        assertEquals(201, responseEpic.statusCode());
 
+        Subtask subtask2 = new Subtask("Подзадача 1",
+                "Позадача-тестирование-1", TaskStatus.NEW,
+                manager.getEpicsList().getFirst().getId(),
+                "15.01.2025-17:00", 60L);
 
-        HttpResponse<String> responseSubtask2 = client.send(requestSubtask,
+        String subtaskJson2 = gson.toJson(subtask2);
+        HttpRequest requestSubtask2 = HttpRequest.newBuilder().uri(urlSubtask).
+                POST(HttpRequest.BodyPublishers.ofString(subtaskJson2)).build();
+        HttpResponse<String> responseSubtask2 = client.send(requestSubtask2,
                 HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа (без эпика подзадача не создается)
-//        assertEquals(201, responseSubtask2.statusCode());
+        assertEquals(201, responseSubtask2.statusCode());
 
         // проверяем, что создалась одна задача с корректным именем
-//        List<Subtask> tasksFromManager = manager.getSubTasksList();
-//
-//        assertNotNull(tasksFromManager, "Задачи не возвращаются");
-//        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-//        assertEquals("Подзадача 1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
+        List<Subtask> tasksFromManager = manager.getSubTasksList();
+
+        assertNotNull(tasksFromManager, "Задачи не возвращаются");
+        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
+        assertEquals("Подзадача 1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
     }
 }

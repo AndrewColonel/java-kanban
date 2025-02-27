@@ -69,13 +69,13 @@ class HistoryPrioritisedHandlerTest {
 
         // создаём эпик и подзадачу (без эпика не создается)
         Epic epic = new Epic("Эпик-тест1", "Эпик-тестирование-1");
-        Subtask subtask = new Subtask("Подзадача 1",
-                "Позадача-тестирование-1", TaskStatus.NEW, 3,
-                "15.01.2025-17:00", 60L);
+//        Subtask subtask = new Subtask("Подзадача 1",
+//                "Позадача-тестирование-1", TaskStatus.NEW, 3,
+//                "15.01.2025-17:00", 60L);
         // конвертируем её в JSON
         String task1Json = gson.toJson(task1);
         String task2Json = gson.toJson(task2);
-        String subtaskJson = gson.toJson(subtask);
+//        String subtaskJson = gson.toJson(subtask);
         String epicJson = gson.toJson(epic);
 
         HttpRequest requestTask1 = HttpRequest.newBuilder().uri(urlTask)
@@ -84,11 +84,9 @@ class HistoryPrioritisedHandlerTest {
         HttpResponse<String> responseTask1 = client.send(requestTask1,
                 HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
-//        assertEquals(201, responseTask1.statusCode());
-
+        assertEquals(201, responseTask1.statusCode());
 
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-
 
         // заполняем списки задачами
         HttpRequest requestTask2 = HttpRequest.newBuilder().uri(urlTask)
@@ -96,19 +94,25 @@ class HistoryPrioritisedHandlerTest {
         // вызываем рест, отвечающий за создание задач
         HttpResponse<String> responseTask2 = client.send(requestTask2, handler);
         // проверяем код ответа
-//        assertEquals(201, responseTask2.statusCode());
+        assertEquals(201, responseTask2.statusCode());
 
         HttpRequest requestEpic = HttpRequest.newBuilder().uri(urlEpics)
                 .POST(HttpRequest.BodyPublishers.ofString(epicJson)).build();
         HttpResponse<String> responseEpic = client.send(requestEpic, handler);
-//        assertEquals(201, responseEpic.statusCode());
+        assertEquals(201, responseEpic.statusCode());
 
+        Subtask subtask = new Subtask("Подзадача 1",
+                "Позадача-тестирование-1", TaskStatus.NEW,
+                manager.getEpicsList().getFirst().getId(),
+                "15.01.2025-17:00", 60L);
+
+        String subtaskJson = gson.toJson(subtask);
 
         HttpRequest requestSubtask = HttpRequest.newBuilder().uri(urlSubtask)
                 .POST(HttpRequest.BodyPublishers.ofString(subtaskJson)).build();
         HttpResponse<String> responseSubtask = client.send(requestSubtask, handler);
         // проверяем код ответа (без эпика подзадача не создается)
-//        assertEquals(201, responseSubtask.statusCode());
+        assertEquals(201, responseSubtask.statusCode());
 
         HttpRequest requestGetHistory = HttpRequest.newBuilder().uri(urlHistory)
                 .GET().build();
@@ -139,13 +143,11 @@ class HistoryPrioritisedHandlerTest {
                 client.send(request, handler);
             }
         }
-//        assertEquals(3, prioritizedTasks.size(),
-//                "Некорректное количество задач в списке задач по приоритету");
-//        List<Task> historyList = manager.getHistory();
-//
-//        assertNotNull(historyList, "Задачи в списке историии не возвращаются");
-//        assertEquals(4, historyList.size(), "Некорректное количество задач в списке истории ");
+        assertEquals(3, prioritizedTasks.size(),
+                "Некорректное количество задач в списке задач по приоритету");
+        List<Task> historyList = manager.getHistory();
 
-
+        assertNotNull(historyList, "Задачи в списке историии не возвращаются");
+        assertEquals(4, historyList.size(), "Некорректное количество задач в списке истории ");
     }
 }
