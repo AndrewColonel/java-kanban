@@ -83,7 +83,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             String jsonTasksList = gson.toJson(manager.getTasksList());
             sendText(exchange, jsonTasksList);
         } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
-                 | ManagerSaveException | ManagerLoadException e){
+                 | ManagerSaveException | ManagerLoadException e) {
             sendRequestError(exchange);
         }
     }
