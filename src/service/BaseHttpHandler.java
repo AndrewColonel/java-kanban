@@ -33,17 +33,6 @@ public class BaseHttpHandler {
     // protected final static TaskManager manager = Managers.getDefault();
     protected final static TaskManager manager = HttpTaskServer.getHttpServerManager();
 
-//    protected Gson gson;
-//    public BaseHttpHandler() {
-////        this.manager = Managers.getDefault();
-//        this.gson = new GsonBuilder()
-//                .serializeNulls()
-//                .setPrettyPrinting()
-//                .registerTypeAdapter(LocalDateTime.class, new LocalTimeTypeAdapter())
-//                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-//                .create();
-//    }
-
     protected Gson gson = HttpTaskServer.getGson();
 
     // метод для отправки кода состояния и сообщения клиенту в виде JSOn строки

@@ -142,7 +142,6 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             } catch (JsonSyntaxException | NullPointerException | DateTimeParseException
                      | ManagerSaveException | ManagerLoadException e) {
 
-
                 sendRequestError(exchange);
             }
         }

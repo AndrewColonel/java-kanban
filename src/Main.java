@@ -1,10 +1,5 @@
-import manager.InMemoryTaskManager;
-import model.Epic;
-import model.Subtask;
-import model.Task;
-import model.TaskStatus;
-import manager.Managers;
-import manager.TaskManager;
+import manager.*;
+import model.*;
 
 public class Main {
 
