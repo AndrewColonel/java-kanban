@@ -106,6 +106,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             sendRequestError(exchange);
         }
     }
+
     // обработка запросов DELETE, удаляет задачу по ID (коды статуса 200, 404 и 500)
     private void handleDeleteSubTaskById(HttpExchange exchange) throws IOException {
         Optional<Integer> mayBeTaskId = getTaskId(exchange);
