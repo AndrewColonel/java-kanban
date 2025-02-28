@@ -22,7 +22,6 @@ class TaskHandlerTest {
     TaskManager manager = new InMemoryTaskManager();
 //     TaskManager manager = Managers.getDefault();
 
-
     // передаём его в качестве аргумента в конструктор HttpTaskServer
     HttpTaskServer taskServer = new HttpTaskServer(manager);
     Gson gson = HttpTaskServer.getGson();
@@ -43,7 +42,6 @@ class TaskHandlerTest {
         taskServer.stop();
     }
 
-
     @Test
     public void testAddUpdateTask() throws IOException, InterruptedException {
         // создаём задачу
@@ -55,31 +53,33 @@ class TaskHandlerTest {
         String taskJson = gson.toJson(task1);
 
         // создаём HTTP-клиент и запрос
-        HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks");
-        HttpRequest request = HttpRequest.newBuilder().uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            URI url = URI.create("http://localhost:8080/tasks");
+            HttpRequest request = HttpRequest.newBuilder().uri(url)
+                    .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
 
-        // вызываем рест, отвечающий за создание задач
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // проверяем код ответа
-        assertEquals(201, response.statusCode());
+            // вызываем рест, отвечающий за создание задач
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            // проверяем код ответа
+            assertEquals(201, response.statusCode());
 
-        taskJson = gson.toJson(task2);
-        request = HttpRequest.newBuilder().uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+            taskJson = gson.toJson(task2);
+            request = HttpRequest.newBuilder().uri(url)
+                    .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
 
-        response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // проверяем код ответа
-        assertEquals(201, response.statusCode());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // проверяем код ответа
+            assertEquals(201, response.statusCode());
 
 
-        // проверяем, что создалась одна задача с корректным именем
-        List<Task> tasksFromManager = manager.getTasksList();
+            // проверяем, что создалась одна задача с корректным именем
+            List<Task> tasksFromManager = manager.getTasksList();
 
-        assertNotNull(tasksFromManager, "Задачи не возвращаются");
-        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Test 3", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
+            assertNotNull(tasksFromManager, "Задачи не возвращаются");
+            assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
+            assertEquals("Test 3", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
+        }
     }
 
 }
