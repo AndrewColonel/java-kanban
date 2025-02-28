@@ -64,9 +64,9 @@ class HistoryPrioritisedHandlerTest {
 
             // создаём задачу
             Task task1 = new Task("Test 2",
-                    "Testing task 2", TaskStatus.NEW, "11.10.2026-00:00", 10L);
+                    "Testing task 2", TaskStatus.NEW, "11.10.2021-00:00", 10L);
             Task task2 = new Task("Test 3",
-                    "Testing task 3", TaskStatus.NEW, "12.10.2026-00:00", 10L);
+                    "Testing task 3", TaskStatus.NEW, "12.10.2022-00:00", 10L);
 
             // создаём эпик и подзадачу (без эпика не создается)
             Epic epic = new Epic("Эпик-тест1", "Эпик-тестирование-1");
@@ -129,7 +129,7 @@ class HistoryPrioritisedHandlerTest {
             Subtask subtask2 = new Subtask("Подзадача 2",
                     "Позадача-тестирование-1", TaskStatus.NEW,
                     jsonObject.get("id").getAsInt(),
-                    "15.01.2025-17:00", 60L);
+                    "15.01.2023-17:00", 60L);
 
             Subtask subtask = new Subtask("Подзадача 1",
                     "Позадача-тестирование-1", TaskStatus.NEW,
