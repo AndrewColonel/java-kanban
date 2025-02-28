@@ -95,9 +95,14 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             Task task = gson.fromJson(requestToPost, Task.class);
             // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID
-            if (task.getId() != 0) manager.update(task); //ID не 0, обновляем
-            else manager.add(task);
-            sendPostOk(exchange);
+            if (task.getId() != 0) {
+                manager.update(task); //ID не 0, обновляем
+                sendPostOk(exchange, "POST request complete");
+            } else {
+                manager.add(task);
+                String jsonRespId = "{\"id\": " + task.getId() + "}";
+                sendPostOk(exchange, jsonRespId);
+            }
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {

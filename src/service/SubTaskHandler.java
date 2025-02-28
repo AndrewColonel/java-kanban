@@ -94,9 +94,14 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             Subtask subTask = gson.fromJson(requestToPost, Subtask.class);
             // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
-            if (subTask.getId() != 0) manager.update(subTask); //ID не 0, обновляем
-            else manager.add(subTask);
-            sendPostOk(exchange);
+            if (subTask.getId() != 0) {
+                manager.update(subTask); //ID не 0, обновляем
+                sendPostOk(exchange, "POST request complete");
+            } else {
+                manager.add(subTask);
+                String jsonRespId = "{\"id\": " + subTask.getId() + "}";
+                sendPostOk(exchange, jsonRespId);
+            }
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {

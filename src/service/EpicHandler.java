@@ -99,9 +99,14 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         try {
             Epic epic = gson.fromJson(requestToPost, Epic.class);
             // пересекающиеся задачи могут быть перезаписаны, если они обновляются, т.е.равны их ID )))
-            if (epic.getId() != 0) manager.update(epic);
-            else manager.add(epic);
-            sendPostOk(exchange);
+            if (epic.getId() != 0) {
+                manager.update(epic); //ID не 0, обновляем
+                sendPostOk(exchange, "POST request complete");
+            } else {
+                manager.add(epic);
+                String jsonRespId = "{\"id\": " + epic.getId() + "}";
+                sendPostOk(exchange, jsonRespId);
+            }
         } catch (ManagerNotAcceptableException e) {
             sendHasInteractions(exchange);
         } catch (ManagerNotFoundException e) {

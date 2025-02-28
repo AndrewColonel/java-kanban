@@ -45,9 +45,12 @@ public class BaseHttpHandler {
     }
 
     // метод для отправки кода состояния
-    protected void sendPostOk(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(201, 0);
-        exchange.getResponseBody().write("POST request complete".getBytes(DEFAULT_CHARSET));
+    protected void sendPostOk(HttpExchange exchange, String text) throws IOException {
+        byte[] resp = text.getBytes(DEFAULT_CHARSET);
+        exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        exchange.sendResponseHeaders(201, resp.length);
+//        exchange.getResponseBody().write("POST request complete".getBytes(DEFAULT_CHARSET));
+        exchange.getResponseBody().write(resp);
         exchange.close();
     }
 
