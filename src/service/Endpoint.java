@@ -1,0 +1,25 @@
+package service;
+
+public enum Endpoint {
+    GET_TASK,
+    GET_TASK_BYID,
+    POST_TASK,
+    DELETE_TASK_BYID,
+
+    GET_SUBTASK,
+    GET_SUBTASK_BYID,
+    POST_SUBTASK,
+    DELETE_SUBTASK_BYID,
+
+    GET_EPIC,
+    GET_EPIC_BYID,
+    GET_EPIC_SUBTASKS,
+    POST_EPIC,
+    DELETE_EPIC_BYID,
+
+    GET_HISTORY,
+
+    GET_PRIORITIZED,
+
+    UNKNOWN
+}

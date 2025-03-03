@@ -1,9 +1,11 @@
-package service;
+package manager;
 
 import model.Epic;
 import model.Subtask;
 import model.Task;
+
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     //Методы для каждого из типа задач(Задача/Эпик/Подзадача):
@@ -57,4 +59,9 @@ public interface TaskManager {
 
     //Дополнительные методы - получение списка всех подзадач определённого эпика
     List<Subtask> getSubTasksListByEpic(int epicId);
+
+    Set<Task> getPrioritizedTasks();
+
+//    Boolean isOverlapsed(Task task);
+
 }

@@ -17,7 +17,7 @@ public class Task {
     private LocalDateTime startTime;
 
 
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+//    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
     //Конструктор для создания новых задач и подзадач
     public Task(String name, String description, TaskStatus status) {
@@ -32,7 +32,7 @@ public class Task {
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
-        this.startTime = LocalDateTime.parse(startTime, dateTimeFormatter);
+        this.startTime = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
     }
 
     //Конструктор для создания новых задач и подзадач
@@ -42,7 +42,7 @@ public class Task {
         this.description = description;
         this.status = status;
         this.duration = Duration.ofMinutes(duration);
-        this.startTime = LocalDateTime.parse(startTime, dateTimeFormatter);
+        this.startTime = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
     }
 
     //Конструктор для создания новых задач и подзадач после восстановления из файла
@@ -102,18 +102,18 @@ public class Task {
     }
 
     public String getFormattedStartTime() { // метод для корректного преобразования toString
-        if (isStartTimeValid()) return getStartTime().format(dateTimeFormatter);
+        if (isStartTimeValid()) return getStartTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
         return null;
     }
 
     public String getFormattedEndTime() { // метод для корректного преобразования toString
-        if (isEndTimeValid()) return getEndTime().format(dateTimeFormatter);
+        if (isEndTimeValid()) return getEndTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
         return null;
     }
 
     public LocalDateTime getParsedStartTime(String parsedStartTime) {
         // метод для корректного парсинга значений null в объект LocalTimeDate
-        if (!parsedStartTime.equals("null")) return LocalDateTime.parse(parsedStartTime, dateTimeFormatter);
+        if (!parsedStartTime.equals("null")) return LocalDateTime.parse(parsedStartTime, DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
         return null;
     }
 

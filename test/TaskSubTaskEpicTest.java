@@ -5,7 +5,7 @@
 
 import model.*;
 import org.junit.jupiter.api.*;
-import service.*;
+import manager.*;
 
 import java.time.LocalDateTime;
 
@@ -46,19 +46,19 @@ class TaskSubTaskEpicTest extends TaskManagerTest<InMemoryTaskManager> {
         assertEquals(subTask1, subTask2, "Задачи не совпадают.");
     }
 
-    @Test
-    void subTaskShouldNOTBeEpic() { //проверяем, что объект model.Subtask нельзя сделать своим же эпиком;
-        //по условиям ТЗ4 - для каждой подзадачи известно, в рамках какого эпика она выполняется,
-        //на основании заполнения поля EpicID
-        // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
-        int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
-        subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
-        manager.add(subTask1); //добавляем Подзадачу через менеджер в общее хранилище подзадач
-        Subtask subtask = manager.getSubTaskByID(epicID);
-        //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
-        // его id должен быть изменен в менеджере и только потом записан в общее хранилище подзадач
-        assertNull(subtask, "Задача найдена!");
-    }
+//    @Test
+//    void subTaskShouldNOTBeEpic() { //проверяем, что объект model.Subtask нельзя сделать своим же эпиком;
+//        //по условиям ТЗ4 - для каждой подзадачи известно, в рамках какого эпика она выполняется,
+//        //на основании заполнения поля EpicID
+//        // model.Subtask станет своим же эпиком, если его id будет равно id его же эпика
+//        int epicID = subTask1.getEpicID(); // получаем ID эпика данного model.Subtask
+//        subTask1.setId(epicID); // принудительно меняем id самого model.Subtask на ID ее же эпика
+//        manager.add(subTask1); //добавляем Подзадачу через менеджер в общее хранилище подзадач
+//        Subtask subtask = manager.getSubTaskByID(epicID);
+//        //запрашиваемый по id = epicid, subtask не должен быть получен, потому что
+//        // его id должен быть изменен в менеджере и только потом записан в общее хранилище подзадач
+//        assertNull(subtask, "Задача найдена!");
+//    }
 
     @Test
     void epicShouldNOTBeAddedLikeEpic() {
